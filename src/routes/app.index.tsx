@@ -4,17 +4,37 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Bookmark, Sparkles, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus,
+  Bookmark,
+  Sparkles,
+  Zap,
+  Crown,
+  Star,
+} from "lucide-react";
+import { CHECKOUT_URLS } from "@/lib/checkout";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
 });
 
+// Free tier allowance — tracked client-side against saved generations count.
+// Replace with a server-side credit ledger once billing is live.
+const FREE_CREDITS = 3;
+
 function Dashboard() {
   const { user } = useAuth();
   const [count, setCount] = useState<number | null>(null);
   const [recent, setRecent] = useState<
-    { id: string; business_name: string; star_rating: number; created_at: string }[]
+    {
+      id: string;
+      business_name: string;
+      star_rating: number;
+      tone: string;
+      review_text: string;
+      created_at: string;
+    }[]
   >([]);
 
   useEffect(() => {
@@ -28,13 +48,17 @@ function Dashboard() {
 
       const { data } = await supabase
         .from("generations")
-        .select("id, business_name, star_rating, created_at")
+        .select("id, business_name, star_rating, tone, review_text, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(5);
       setRecent(data ?? []);
     })();
   }, [user]);
+
+  const used = count ?? 0;
+  const creditsRemaining = Math.max(FREE_CREDITS - used, 0);
+  const outOfCredits = creditsRemaining === 0;
 
   return (
     <div className="space-y-6">
@@ -47,26 +71,106 @@ function Dashboard() {
             Rescue your next review in under a minute.
           </p>
         </div>
-        <Button asChild>
-          <Link to="/app/generate">
-            <Plus className="mr-1.5 h-4 w-4" /> New rescue
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <a href={CHECKOUT_URLS.starter} target="_blank" rel="noreferrer">
+              <Crown className="mr-1.5 h-4 w-4" /> Upgrade
+            </a>
+          </Button>
+          <Button asChild>
+            <Link to="/app/generate">
+              <Plus className="mr-1.5 h-4 w-4" /> New rescue
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard
-          icon={Sparkles}
-          label="Rescue packs generated"
-          value={count ?? "—"}
-        />
-        <StatCard icon={TrendingUp} label="Plan" value="Free" sub="1 preview / day" />
-        <StatCard icon={Bookmark} label="Saved replies" value={count ?? "—"} />
+        <Card className="relative overflow-hidden shadow-card">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <Zap className="h-4 w-4" />
+            </div>
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                Credits remaining
+              </div>
+              <div className="mt-0.5 text-2xl font-semibold">
+                {creditsRemaining}{" "}
+                <span className="text-sm font-normal text-muted-foreground">
+                  / {FREE_CREDITS}
+                </span>
+              </div>
+              <div className="text-xs text-muted-foreground">Free plan</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-card">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <Bookmark className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                Saved generations
+              </div>
+              <div className="mt-0.5 text-2xl font-semibold">
+                {count ?? "—"}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                In your library
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-card">
+          <CardContent className="flex items-start gap-3 p-5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                Plan
+              </div>
+              <div className="mt-0.5 text-2xl font-semibold">Free</div>
+              <div className="text-xs text-muted-foreground">
+                Upgrade for more
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Upgrade CTA banner */}
+      <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
+        <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+            <Crown className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold">
+              {outOfCredits
+                ? "Out of free credits"
+                : "Unlock 10 full rescue packs for $9"}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Get all 3 public reply drafts, the private recovery message, owner
+              checklist, and flag guidance for your next 10 reviews.
+            </p>
+          </div>
+          <Button asChild size="lg" className="w-full sm:w-auto">
+            <a href={CHECKOUT_URLS.starter} target="_blank" rel="noreferrer">
+              Unlock for $9
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card className="shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>Recent rescues</CardTitle>
+          <CardTitle>Recent review replies</CardTitle>
           <Button asChild size="sm" variant="ghost">
             <Link to="/app/saved">View all</Link>
           </Button>
@@ -86,14 +190,27 @@ function Dashboard() {
               {recent.map((r) => (
                 <li
                   key={r.id}
-                  className="flex items-center justify-between py-3 text-sm"
+                  className="flex items-center justify-between gap-3 py-3 text-sm"
                 >
-                  <div>
-                    <div className="font-medium">{r.business_name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {r.star_rating}★ ·{" "}
-                      {new Date(r.created_at).toLocaleDateString()}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{r.business_name}</span>
+                      <Badge variant="secondary" className="text-[10px] uppercase">
+                        {r.tone}
+                      </Badge>
                     </div>
+                    <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-0.5 text-warning">
+                        {Array.from({ length: r.star_rating }).map((_, i) => (
+                          <Star key={i} className="h-3 w-3 fill-current" />
+                        ))}
+                      </span>
+                      <span>·</span>
+                      <span>{new Date(r.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+                      {r.review_text}
+                    </p>
                   </div>
                   <Button asChild size="sm" variant="ghost">
                     <Link to="/app/saved">Open</Link>
@@ -105,34 +222,5 @@ function Dashboard() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  sub,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string | number;
-  sub?: string;
-}) {
-  return (
-    <Card className="shadow-card">
-      <CardContent className="flex items-start gap-3 p-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary">
-          <Icon className="h-4 w-4" />
-        </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-muted-foreground">
-            {label}
-          </div>
-          <div className="mt-0.5 text-2xl font-semibold">{value}</div>
-          {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
-        </div>
-      </CardContent>
-    </Card>
   );
 }

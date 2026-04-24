@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CHECKOUT_URLS } from "@/lib/checkout";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -24,7 +25,17 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-const plans = [
+const plans: {
+  name: string;
+  price: string;
+  cadence: string;
+  blurb: string;
+  cta: string;
+  href?: string;
+  to?: "/login";
+  features: string[];
+  featured?: boolean;
+}[] = [
   {
     name: "Free",
     price: "$0",
@@ -43,8 +54,8 @@ const plans = [
     price: "$9",
     cadence: "one-time",
     blurb: "For the occasional bad review.",
-    cta: "Get Starter",
-    to: "/login",
+    cta: "Get Starter — $9",
+    href: CHECKOUT_URLS.starter,
     features: [
       "10 full rescue packs",
       "All 3 public reply drafts",
@@ -52,7 +63,6 @@ const plans = [
       "Owner action checklist",
       "Flag / report guidance",
     ],
-    featured: false,
   },
   {
     name: "Pro",
@@ -60,7 +70,7 @@ const plans = [
     cadence: "/ month",
     blurb: "Most restaurants pick this.",
     cta: "Go Pro",
-    to: "/login",
+    href: CHECKOUT_URLS.pro,
     features: [
       "100 rescue packs / month",
       "Everything in Starter",
@@ -75,7 +85,7 @@ const plans = [
     cadence: "/ month",
     blurb: "Manage multiple locations.",
     cta: "Join beta",
-    to: "/login",
+    href: CHECKOUT_URLS.agency,
     features: [
       "500 rescue packs / month",
       "Unlimited business profiles",
@@ -145,15 +155,27 @@ function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  asChild
-                  variant={p.featured ? "default" : "outline"}
-                  className="w-full"
-                >
-                  <Link to={p.to} search={{ mode: "signup" }}>
-                    {p.cta}
-                  </Link>
-                </Button>
+                {p.href ? (
+                  <Button
+                    asChild
+                    variant={p.featured ? "default" : "outline"}
+                    className="w-full"
+                  >
+                    <a href={p.href} target="_blank" rel="noreferrer">
+                      {p.cta}
+                    </a>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant={p.featured ? "default" : "outline"}
+                    className="w-full"
+                  >
+                    <Link to={p.to ?? "/login"} search={{ mode: "signup" }}>
+                      {p.cta}
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}
