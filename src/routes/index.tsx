@@ -171,24 +171,31 @@ function LandingPage() {
 
           {pack && (
             <div id="result" className="mt-10 space-y-4 scroll-mt-20">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold">Your rescue pack</h3>
-                <Button
-                  size="sm"
-                  onClick={() =>
-                    navigate({ to: "/login", search: { mode: "signup" } })
-                  }
-                >
-                  Save to my account
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-xl font-semibold">Your rescue pack</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Free preview — 1 short public reply shown. Rest are locked.
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/login" search={{ mode: "signup" }}>
+                    Create free account
+                  </Link>
                 </Button>
               </div>
+
+              <UnlockCTA href={CHECKOUT_URLS.starter} />
+
               <RescueResult
                 pack={pack}
                 gated
-                onUnlock={() =>
-                  navigate({ to: "/login", search: { mode: "signup" } })
-                }
+                onUnlock={() => {
+                  window.open(CHECKOUT_URLS.starter, "_blank", "noreferrer");
+                }}
               />
+
+              <UnlockCTA href={CHECKOUT_URLS.starter} />
             </div>
           )}
         </div>
