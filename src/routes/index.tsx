@@ -1,12 +1,13 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { RescueForm, type RescueInput } from "@/components/rescue-form";
-import { RescueResult } from "@/components/rescue-result";
+import { RescueResult, UnlockCTA } from "@/components/rescue-result";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
+import { CHECKOUT_URLS } from "@/lib/checkout";
 import {
   Sparkles,
   ShieldCheck,
