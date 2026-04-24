@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CHECKOUT_URLS } from "@/lib/checkout";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
