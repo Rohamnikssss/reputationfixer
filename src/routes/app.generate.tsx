@@ -58,6 +58,8 @@ function GeneratePage() {
         what_not_to_say: pack.whatNotToSay.join("\n"),
         action_checklist: pack.actionChecklist.join("\n"),
         flag_guidance: pack.flagGuidance,
+        // Full rescue pack as structured JSON (canonical storage).
+        output_json: pack as unknown as Record<string, unknown>,
       })
       .select("id")
       .single();
