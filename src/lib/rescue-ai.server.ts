@@ -212,12 +212,21 @@ function buildUserPrompt(input: RescueInput): string {
 Business type: ${input.businessType || "Local business"}
 Star rating given: ${input.starRating}/5
 Desired tone: ${input.tone}
-Owner context (optional, private — only use if it authorizes specific claims/comp): ${input.ownerContext || "(none)"}
+Owner context (optional, private — only use if it authorizes specific claims/comp/contact details): ${input.ownerContext || "(none)"}
 
 Review text:
 """${input.reviewText}"""
 
-Generate the full rescue pack using the rescue_pack tool. Follow every rule in the system prompt.`;
+Before writing, silently extract the 1–3 concrete complaints in this review (e.g. cold food, long wait, rude server, wrong order, cleanliness, booking issue, delivery issue, billing dispute, allergen/dietary issue). Every public reply and the private message MUST reference those specific complaints by name — do not write anything that could be copy-pasted onto a different review.
+
+Hard requirements:
+- short_public_reply: strictly under 75 words; names 1–2 specific issues from the review; ends with a manager/owner contact line (use owner-provided contact from context if given, otherwise "[manager email/phone]").
+- Use the reviewer's first name if it appears in the review; otherwise open with "Hi there,".
+- Do NOT use any banned phrase listed in the system prompt. No "we are very sorry to hear about your experience", no "at your convenience", no "valued customer", no generic "strive for excellence".
+- Own the specific miss without admitting legal liability.
+- Do not invent facts the reviewer did not state.
+
+Generate the full rescue pack using the rescue_pack tool.`;
 }
 
 // ── AI call ────────────────────────────────────────────────────────────────
