@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { RescueForm, type RescueInput } from "@/components/rescue-form";
 import { RescueResult } from "@/components/rescue-result";
 import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
@@ -59,7 +60,7 @@ function GeneratePage() {
         action_checklist: pack.actionChecklist.join("\n"),
         flag_guidance: pack.flagGuidance,
         // Full rescue pack as structured JSON (canonical storage).
-        output_json: pack as unknown as Record<string, unknown>,
+        output_json: pack as unknown as Json,
       })
       .select("id")
       .single();
