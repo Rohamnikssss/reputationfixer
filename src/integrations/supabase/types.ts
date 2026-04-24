@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      generations: {
+        Row: {
+          action_checklist: string | null
+          business_name: string
+          business_type: string | null
+          created_at: string
+          firm_reply: string | null
+          flag_guidance: string | null
+          id: string
+          owner_context: string | null
+          private_message: string | null
+          review_text: string
+          short_reply: string | null
+          star_rating: number
+          tone: string
+          user_id: string
+          warm_reply: string | null
+          what_not_to_say: string | null
+        }
+        Insert: {
+          action_checklist?: string | null
+          business_name: string
+          business_type?: string | null
+          created_at?: string
+          firm_reply?: string | null
+          flag_guidance?: string | null
+          id?: string
+          owner_context?: string | null
+          private_message?: string | null
+          review_text: string
+          short_reply?: string | null
+          star_rating: number
+          tone: string
+          user_id: string
+          warm_reply?: string | null
+          what_not_to_say?: string | null
+        }
+        Update: {
+          action_checklist?: string | null
+          business_name?: string
+          business_type?: string | null
+          created_at?: string
+          firm_reply?: string | null
+          flag_guidance?: string | null
+          id?: string
+          owner_context?: string | null
+          private_message?: string | null
+          review_text?: string
+          short_reply?: string | null
+          star_rating?: number
+          tone?: string
+          user_id?: string
+          warm_reply?: string | null
+          what_not_to_say?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
