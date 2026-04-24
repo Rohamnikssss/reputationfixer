@@ -155,36 +155,40 @@ const RESCUE_TOOL_SCHEMA = {
       properties: {
         short_public_reply: {
           type: "string",
-          description: "Short public reply, under ~40 words.",
+          description:
+            "Short public reply, STRICTLY under 75 words. Must name 1–2 concrete issues from the review and end with a manager contact line. No banned generic phrases.",
         },
         warm_public_reply: {
           type: "string",
-          description: "Warm public reply, 50–90 words.",
+          description:
+            "Warm public reply, 60–100 words. Empathetic and specific to the review's concrete issues. Ownership without legal liability. Private contact line.",
         },
         firm_public_reply: {
           type: "string",
           description:
-            "Firm but professional public reply, 60–100 words. Never aggressive.",
+            "Firm but professional public reply, 70–110 words. Calm, factual, may politely reframe unfair claims. References specific issues. Never aggressive.",
         },
         private_recovery_message: {
           type: "string",
           description:
-            "Private customer recovery message, 80–140 words. Invites offline resolution.",
+            "Private 1:1 recovery message, 80–140 words. Direct, human, references specific issues, offers to make it right within the owner's stated policy.",
         },
         what_not_to_say: {
           type: "array",
           items: { type: "string" },
-          description: "4–6 short phrases or traps to avoid.",
+          description:
+            "4–6 short phrases/traps to avoid, tailored to THIS review's specific content (not generic advice).",
         },
         owner_action_checklist: {
           type: "array",
           items: { type: "string" },
-          description: "4–7 concrete internal owner actions.",
+          description:
+            "4–7 concrete internal actions tied to the specific issues raised in the review (not generic 'improve service').",
         },
         flag_guidance: {
           type: "string",
           description:
-            "Short paragraph on whether the review may warrant flagging per platform policy. Never guarantee removal.",
+            "Short paragraph: does this review appear to violate platform policy? If so, flagging MAY be worth considering. Never guarantee removal.",
         },
       },
       required: [
