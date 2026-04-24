@@ -24,7 +24,6 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pack, setPack] = useState<RescuePack | null>(null);
 
