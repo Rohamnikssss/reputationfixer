@@ -39,6 +39,19 @@ STRICT RULES:
 export const generateRescuePack = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data }) => {
+    // ─────────────────────────────────────────────────────────────────────
+    // AI API KEY
+    // ─────────────────────────────────────────────────────────────────────
+    // This server function calls the Lovable AI Gateway, which proxies
+    // Google Gemini models and handles billing for you.
+    //
+    // Server-only env vars (never expose to the client):
+    //   LOVABLE_API_KEY   — used below, preferred on Lovable Cloud.
+    //   GEMINI_API_KEY    — use this instead if you call Google's Gemini
+    //                        REST API directly (e.g. after migrating off
+    //                        Lovable). Swap the fetch URL + auth header
+    //                        accordingly.
+    // ─────────────────────────────────────────────────────────────────────
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
