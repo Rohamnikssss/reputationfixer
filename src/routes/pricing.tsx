@@ -155,15 +155,27 @@ function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  asChild
-                  variant={p.featured ? "default" : "outline"}
-                  className="w-full"
-                >
-                  <Link to={p.to} search={{ mode: "signup" }}>
-                    {p.cta}
-                  </Link>
-                </Button>
+                {p.href ? (
+                  <Button
+                    asChild
+                    variant={p.featured ? "default" : "outline"}
+                    className="w-full"
+                  >
+                    <a href={p.href} target="_blank" rel="noreferrer">
+                      {p.cta}
+                    </a>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant={p.featured ? "default" : "outline"}
+                    className="w-full"
+                  >
+                    <Link to={p.to ?? "/login"} search={{ mode: "signup" }}>
+                      {p.cta}
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}
