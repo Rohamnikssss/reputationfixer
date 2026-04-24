@@ -23,6 +23,7 @@ export type Database = {
           firm_reply: string | null
           flag_guidance: string | null
           id: string
+          output_json: Json | null
           owner_context: string | null
           private_message: string | null
           review_text: string
@@ -41,6 +42,7 @@ export type Database = {
           firm_reply?: string | null
           flag_guidance?: string | null
           id?: string
+          output_json?: Json | null
           owner_context?: string | null
           private_message?: string | null
           review_text: string
@@ -59,6 +61,7 @@ export type Database = {
           firm_reply?: string | null
           flag_guidance?: string | null
           id?: string
+          output_json?: Json | null
           owner_context?: string | null
           private_message?: string | null
           review_text?: string
@@ -68,6 +71,48 @@ export type Database = {
           user_id?: string
           warm_reply?: string | null
           what_not_to_say?: string | null
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          email: string
+          id: string
+          lemon_order_id: string | null
+          plan: string
+          raw_payload: Json | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          email: string
+          id?: string
+          lemon_order_id?: string | null
+          plan: string
+          raw_payload?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          email?: string
+          id?: string
+          lemon_order_id?: string | null
+          plan?: string
+          raw_payload?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
