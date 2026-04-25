@@ -1,37 +1,92 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { RescueForm, type RescueInput } from "@/components/rescue-form";
-import { RescueResult } from "@/components/rescue-result";
+import { RescueResult, UnlockCTA } from "@/components/rescue-result";
 import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Crown, Lock } from "lucide-react";
+import { CHECKOUT_URLS } from "@/lib/checkout";
 
 export const Route = createFileRoute("/app/generate")({
   component: GeneratePage,
 });
+
+// Free tier allowance — counts saved generations.
+// Replace with a server-side credit ledger once billing is live.
+const FREE_CREDITS = 3;
 
 function GeneratePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pack, setPack] = useState<RescuePack | null>(null);
-  const [lastInput, setLastInput] = useState<RescueInput | null>(null);
-  const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [usedCredits, setUsedCredits] = useState<number | null>(null);
+
+  // Load credits used (saved generation count).
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { count } = await supabase
+        .from("generations")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      setUsedCredits(count ?? 0);
+    })();
+  }, [user]);
+
+  const creditsRemaining = Math.max(FREE_CREDITS - (usedCredits ?? 0), 0);
+  const outOfCredits = usedCredits !== null && creditsRemaining === 0;
 
   const run = async (v: RescueInput) => {
+    if (!user) return;
+    if (outOfCredits) {
+      toast.error("You're out of free credits — upgrade to keep generating.");
+      return;
+    }
     setLoading(true);
     setPack(null);
     setSavedId(null);
     try {
       const result = await generateRescuePack({ data: v });
       setPack(result);
-      setLastInput(v);
+
+      // Auto-save to history (acts as the credit decrement event).
+      const { data: row, error } = await supabase
+        .from("generations")
+        .insert({
+          user_id: user.id,
+          business_name: v.businessName,
+          business_type: v.businessType,
+          review_text: v.reviewText,
+          star_rating: v.starRating,
+          tone: v.tone,
+          owner_context: v.ownerContext,
+          short_reply: result.shortReply,
+          warm_reply: result.warmReply,
+          firm_reply: result.firmReply,
+          private_message: result.privateMessage,
+          what_not_to_say: result.whatNotToSay.join("\n"),
+          action_checklist: result.actionChecklist.join("\n"),
+          flag_guidance: result.flagGuidance,
+          // Full rescue pack as structured JSON (canonical storage).
+          output_json: result as unknown as Json,
+        })
+        .select("id")
+        .single();
+
+      if (error) {
+        toast.error(`Generated, but couldn't save: ${error.message}`);
+      } else {
+        setSavedId(row.id);
+        setUsedCredits((c) => (c ?? 0) + 1);
+        toast.success("Saved to your library");
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Generation failed");
     } finally {
@@ -39,62 +94,68 @@ function GeneratePage() {
     }
   };
 
-  const save = async () => {
-    if (!pack || !lastInput || !user) return;
-    setSaving(true);
-    const { data, error } = await supabase
-      .from("generations")
-      .insert({
-        user_id: user.id,
-        business_name: lastInput.businessName,
-        business_type: lastInput.businessType,
-        review_text: lastInput.reviewText,
-        star_rating: lastInput.starRating,
-        tone: lastInput.tone,
-        owner_context: lastInput.ownerContext,
-        short_reply: pack.shortReply,
-        warm_reply: pack.warmReply,
-        firm_reply: pack.firmReply,
-        private_message: pack.privateMessage,
-        what_not_to_say: pack.whatNotToSay.join("\n"),
-        action_checklist: pack.actionChecklist.join("\n"),
-        flag_guidance: pack.flagGuidance,
-        // Full rescue pack as structured JSON (canonical storage).
-        output_json: pack as unknown as Json,
-      })
-      .select("id")
-      .single();
-    setSaving(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    setSavedId(data.id);
-    toast.success("Saved to your library");
-  };
-
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Generate rescue reply
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Paste the review, pick a tone, get the full pack.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            Generate rescue reply
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Paste the review, pick a tone, get the full pack.
+          </p>
+        </div>
+        {usedCredits !== null && (
+          <div className="text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">
+              {creditsRemaining}
+            </span>{" "}
+            / {FREE_CREDITS} free credits left
+          </div>
+        )}
       </div>
 
-      <Card className="shadow-card">
-        <CardContent className="p-6 sm:p-8">
-          <RescueForm onSubmit={run} loading={loading} />
-        </CardContent>
-      </Card>
+      {outOfCredits ? (
+        <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
+          <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold">
+                You've used all {FREE_CREDITS} free rescue packs
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Unlock 10 more rescue packs for $9 to keep generating.
+              </p>
+            </div>
+            <Button asChild size="lg">
+              <a href={CHECKOUT_URLS.starter} target="_blank" rel="noreferrer">
+                <Crown className="mr-1.5 h-4 w-4" /> Unlock for $9
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="shadow-card">
+          <CardContent className="p-6 sm:p-8">
+            <RescueForm onSubmit={run} loading={loading} />
+          </CardContent>
+        </Card>
+      )}
 
       {pack && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Rescue pack</h2>
-            {savedId ? (
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold">Rescue pack</h2>
+              <p className="text-xs text-muted-foreground">
+                {savedId
+                  ? "Saved to your library — drafts only, never auto-posted."
+                  : "Drafts only — review before posting to Google."}
+              </p>
+            </div>
+            {savedId && (
               <Button
                 size="sm"
                 variant="outline"
@@ -102,14 +163,15 @@ function GeneratePage() {
               >
                 View in library
               </Button>
-            ) : (
-              <Button size="sm" onClick={save} disabled={saving}>
-                <Save className="mr-1.5 h-4 w-4" />
-                {saving ? "Saving..." : "Save to library"}
-              </Button>
             )}
           </div>
           <RescueResult pack={pack} />
+          <div className="pt-2">
+            <UnlockCTA />
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Need more rescue packs? <Link to="/pricing" className="underline hover:text-foreground">See pricing</Link>.
+            </p>
+          </div>
         </div>
       )}
     </div>
