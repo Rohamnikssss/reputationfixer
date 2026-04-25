@@ -23,37 +23,56 @@ function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="mb-8 text-sm text-muted-foreground">
-          Last updated: {new Date().toLocaleDateString()}
+          Last updated: April 24, 2026
         </p>
 
         <div className="space-y-8 text-foreground/90">
-          <Section title="1. What we collect">
-            Account data (email, name), review inputs you paste, and generated
-            drafts. We do not ingest data from Google or any third-party review
-            platform — you paste it manually.
+          <Section title="1. What we store">
+            To operate the Service, we store: your{" "}
+            <strong>account email</strong>, the{" "}
+            <strong>review text you paste in</strong>, the{" "}
+            <strong>AI-generated rescue replies</strong> we produce for you,
+            and basic <strong>usage data</strong> (timestamps, credits used,
+            plan tier). We do not ingest data from Google or any third-party
+            review platform — you paste it manually.
           </Section>
-          <Section title="2. How we use it">
+          <Section title="2. Don't paste sensitive data">
+            <strong>
+              Please do not enter unnecessary sensitive information
+            </strong>{" "}
+            into the review text or owner-context fields. Avoid pasting
+            customer phone numbers, emails, addresses, payment data, health
+            information, or any data you are not authorized to process. If a
+            customer's name appears in a review, consider redacting it before
+            generating a draft.
+          </Section>
+          <Section title="3. How we use your data">
             To operate the Service, generate rescue packs, save your library,
-            and improve quality. We do not sell your data.
+            decrement credits, and improve quality. We do not sell your data
+            and we do not use it to train third-party AI models without your
+            consent.
           </Section>
-          <Section title="3. AI processing">
-            Inputs are sent to our AI provider to generate replies. Do not
-            include personal data you are not authorized to share. Avoid
-            pasting private customer contact information into review text.
+          <Section title="4. AI processing">
+            The text you submit is sent to our AI provider to generate the
+            reply pack. Treat anything you paste as if it could leave our
+            system — and don't paste anything you wouldn't be comfortable
+            sharing with a third-party processor.
           </Section>
-          <Section title="4. Storage">
+          <Section title="5. Storage and access">
             Data is stored in our cloud database with row-level security. Each
-            user can access only their own rescue packs.
+            account can access only its own rescue packs and saved
+            generations.
           </Section>
-          <Section title="5. Deletion">
+          <Section title="6. Deletion">
             You can delete any saved rescue at any time from the Saved page.
-            To delete your account, contact support@reputationrescue.ai.
+            To delete your account and all associated data, contact
+            support@reputationrescue.ai.
           </Section>
-          <Section title="6. Security">
-            We use encryption in transit. No system is 100% secure; use strong
-            passwords and don't share your login.
+          <Section title="7. Security">
+            We use encryption in transit. No system is 100% secure — use a
+            strong password and don't share your login.
           </Section>
-          <Section title="7. Contact">
+          <Section title="8. Contact">
             Privacy questions: privacy@reputationrescue.ai.
           </Section>
         </div>
