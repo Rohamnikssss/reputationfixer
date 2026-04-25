@@ -37,7 +37,7 @@ export const Route = createRootRoute({
         content:
           "Turn angry Google reviews into calm public replies, private recovery messages, and owner action checklists — without sounding defensive.",
       },
-      { property: "og:title", content: "Reputation Rescue AI" },
+      { property: "og:title", content: "Reputation Rescue AI — Reply to bad Google reviews in 30 seconds" },
       {
         property: "og:description",
         content:
@@ -45,6 +45,12 @@ export const Route = createRootRoute({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Reputation Rescue AI — Reply to bad Google reviews in 30 seconds" },
+      { name: "description", content: "AI-powered tool for restaurants to generate professional replies to negative Google reviews." },
+      { property: "og:description", content: "AI-powered tool for restaurants to generate professional replies to negative Google reviews." },
+      { name: "twitter:description", content: "AI-powered tool for restaurants to generate professional replies to negative Google reviews." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/766b5990-bc37-4dbb-bd03-72c6ed6ed607/id-preview-9ad34879--90c303e3-06e9-4c72-804d-63cda68de995.lovable.app-1777113200559.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/766b5990-bc37-4dbb-bd03-72c6ed6ed607/id-preview-9ad34879--90c303e3-06e9-4c72-804d-63cda68de995.lovable.app-1777113200559.png" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
