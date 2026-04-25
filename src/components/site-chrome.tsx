@@ -82,7 +82,7 @@ export function SiteFooter() {
           © {new Date().getFullYear()} Reputation Rescue AI. AI outputs are drafts
           — review before posting.
         </div>
-        <div className="flex gap-5">
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
           <Link to="/pricing" className="hover:text-foreground">
             Pricing
           </Link>
@@ -91,6 +91,9 @@ export function SiteFooter() {
           </Link>
           <Link to="/privacy" className="hover:text-foreground">
             Privacy
+          </Link>
+          <Link to="/ai-disclaimer" className="hover:text-foreground">
+            AI Disclaimer
           </Link>
         </div>
       </div>

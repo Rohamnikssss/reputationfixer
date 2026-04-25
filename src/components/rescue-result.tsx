@@ -197,6 +197,8 @@ export function RescueResult({
 }) {
   return (
     <div className="space-y-4">
+      <AiDisclaimerBanner />
+
       <ReplyCard label="Short public reply" badge="Public · Free" text={pack.shortReply} />
       <ReplyCard
         label="Warm public reply"
@@ -248,6 +250,25 @@ export function RescueResult({
         locked={gated}
         onUnlock={onUnlock}
       />
+    </div>
+  );
+}
+
+function AiDisclaimerBanner() {
+  return (
+    <div className="flex items-start gap-3 rounded-lg border border-warning/30 bg-warning/5 px-4 py-3 text-xs leading-relaxed text-foreground/90">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+      <p>
+        <strong className="font-semibold">AI-generated draft.</strong> Review
+        before posting. This does not guarantee review removal.{" "}
+        <a
+          href="/ai-disclaimer"
+          className="underline underline-offset-2 hover:text-foreground"
+        >
+          Learn more
+        </a>
+        .
+      </p>
     </div>
   );
 }
