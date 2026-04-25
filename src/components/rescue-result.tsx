@@ -261,7 +261,7 @@ export function UnlockCTA({ href = CHECKOUT_URLS.starter }: { href?: string }) {
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold">
-            Unlock 10 full rescue packs for $9
+            Unlock full rescue pack — $9 for 10 replies
           </h3>
           <p className="text-sm text-muted-foreground">
             Get every reply, the private recovery message, owner checklist, and flag guidance — for your next 10 reviews.
