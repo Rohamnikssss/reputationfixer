@@ -13,6 +13,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ExamplesRouteImport } from './routes/examples'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AiDisclaimerRouteImport } from './routes/ai-disclaimer'
 import { Route as IndexRouteImport } from './routes/index'
@@ -38,6 +39,11 @@ const PricingRoute = PricingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamplesRoute = ExamplesRouteImport.update({
+  id: '/examples',
+  path: '/examples',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-disclaimer': typeof AiDisclaimerRoute
   '/app': typeof AppRouteWithChildren
+  '/examples': typeof ExamplesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-disclaimer': typeof AiDisclaimerRoute
+  '/examples': typeof ExamplesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ai-disclaimer': typeof AiDisclaimerRoute
   '/app': typeof AppRouteWithChildren
+  '/examples': typeof ExamplesRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-disclaimer'
     | '/app'
+    | '/examples'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ai-disclaimer'
+    | '/examples'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/'
     | '/ai-disclaimer'
     | '/app'
+    | '/examples'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -149,6 +161,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiDisclaimerRoute: typeof AiDisclaimerRoute
   AppRoute: typeof AppRouteWithChildren
+  ExamplesRoute: typeof ExamplesRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/examples': {
+      id: '/examples'
+      path: '/examples'
+      fullPath: '/examples'
+      preLoaderRoute: typeof ExamplesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -248,6 +268,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiDisclaimerRoute: AiDisclaimerRoute,
   AppRoute: AppRouteWithChildren,
+  ExamplesRoute: ExamplesRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

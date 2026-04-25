@@ -20,6 +20,13 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-1 md:flex">
           <Link
+            to="/examples"
+            className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Examples
+          </Link>
+          <Link
             to="/pricing"
             className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             activeProps={{ className: "text-foreground" }}
@@ -83,6 +90,9 @@ export function SiteFooter() {
           — review before posting.
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-2">
+          <Link to="/examples" className="hover:text-foreground">
+            Examples
+          </Link>
           <Link to="/pricing" className="hover:text-foreground">
             Pricing
           </Link>
