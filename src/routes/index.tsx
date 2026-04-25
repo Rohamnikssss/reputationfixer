@@ -51,24 +51,42 @@ function LandingPage() {
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-hero">
-        <div className="mx-auto max-w-6xl px-4 pb-16 pt-20 sm:px-6 sm:pt-24">
+        {/* Single soft mint glow accent — calm, blurred, never competing with the headline */}
+        <div
+          aria-hidden
+          className="hero-orb left-1/2 top-[-10%] h-[520px] w-[520px] -translate-x-1/2"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, oklch(0.78 0.16 160 / 0.55), transparent 65%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "radial-gradient(oklch(1 0 0 / 1) 1px, transparent 1px)",
+            backgroundSize: "3px 3px",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-24 sm:px-6 sm:pb-28 sm:pt-32">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs text-muted-foreground">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/60 px-3.5 py-1.5 text-xs text-muted-foreground backdrop-blur">
               <Zap className="h-3.5 w-3.5 text-primary" />
               Built for restaurants under review pressure
             </div>
             <h1 className="text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
               Bad review?{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-gradient-primary">
                 Reply professionally in 30 seconds.
               </span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
+            <p className="mx-auto mt-7 max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
               Reputation Rescue AI helps restaurants turn angry Google reviews
               into calm public replies, private recovery messages, and action
               checklists — without sounding defensive.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button size="lg" asChild>
                 <a href="#generator">Fix my review now</a>
               </Button>
@@ -76,7 +94,7 @@ function LandingPage() {
                 <Link to="/pricing">See pricing</Link>
               </Button>
             </div>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5 text-primary" /> 30-second drafts
               </span>
