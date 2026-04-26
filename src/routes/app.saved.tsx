@@ -45,7 +45,11 @@ function SavedPage() {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    if (error) toast.error(error.message);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[app.saved] load error:", error);
+      toast.error("Failed to load your library. Please refresh.");
+    }
     setRows((data as SavedRow[]) ?? []);
     setLoading(false);
   };
@@ -57,7 +61,11 @@ function SavedPage() {
 
   const remove = async (id: string) => {
     const { error } = await supabase.from("generations").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[app.saved] delete error:", error);
+      return toast.error("Could not delete that rescue pack. Please try again.");
+    }
     toast.success("Deleted");
     setSelected((s) => (s?.id === id ? null : s));
     setRows((r) => r.filter((x) => x.id !== id));

@@ -81,14 +81,22 @@ function GeneratePage() {
         .single();
 
       if (error) {
-        toast.error(`Generated, but couldn't save: ${error.message}`);
+        // eslint-disable-next-line no-console
+        console.error("[app.generate] save error:", error);
+        toast.error("Could not save your rescue pack. Please try again.");
       } else {
         setSavedId(row.id);
         setUsedCredits((c) => (c ?? 0) + 1);
         toast.success("Saved to your library");
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Generation failed");
+      // eslint-disable-next-line no-console
+      console.error("[app.generate] generation failed:", e);
+      toast.error(
+        e instanceof Error && /credit|upgrade/i.test(e.message)
+          ? e.message
+          : "Generation failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
