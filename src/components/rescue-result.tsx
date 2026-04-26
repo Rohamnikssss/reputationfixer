@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, Check, Lock, AlertTriangle, ListChecks, Flag, Sparkles } from "lucide-react";
 import type { RescuePack } from "@/lib/rescue.functions";
 import { cn } from "@/lib/utils";
-import { CHECKOUT_URLS } from "@/lib/checkout";
+import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
 
 function CopyBtn({ text, label = "Copy" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
@@ -43,7 +43,7 @@ function LockedOverlay({ onUnlock }: { onUnlock?: () => void }) {
       </p>
       {onUnlock && (
         <Button size="sm" onClick={onUnlock}>
-          <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Unlock for $9
+          <Sparkles className="mr-1.5 h-3.5 w-3.5" /> Unlock full rescue pack — $19
         </Button>
       )}
     </div>
@@ -273,7 +273,9 @@ function AiDisclaimerBanner() {
   );
 }
 
-export function UnlockCTA({ href = CHECKOUT_URLS.starter }: { href?: string }) {
+export function UnlockCTA({ href }: { href?: string }) {
+  const url = href ?? getStarterCheckoutUrl();
+  const external = hasExternalStarterCheckout() && /^https?:\/\//i.test(url);
   return (
     <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
       <CardContent className="flex flex-col items-center gap-4 p-6 text-center sm:flex-row sm:text-left">
@@ -282,15 +284,18 @@ export function UnlockCTA({ href = CHECKOUT_URLS.starter }: { href?: string }) {
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-semibold">
-            Unlock full rescue pack — $9 for 10 replies
+            Unlock full rescue pack — $19 for 10 replies
           </h3>
           <p className="text-sm text-muted-foreground">
             Get every reply, the private recovery message, owner checklist, and flag guidance — for your next 10 reviews.
           </p>
         </div>
         <Button asChild size="lg" className="w-full sm:w-auto">
-          <a href={href} target="_blank" rel="noreferrer">
-            Unlock for $9
+          <a
+            href={url}
+            {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+          >
+            Unlock full rescue pack — $19
           </a>
         </Button>
       </CardContent>
