@@ -20,11 +20,9 @@
  * API KEY
  * ────────────────────────────────────────────────────────────────────────────
  * Server-only env vars (never expose to the client):
- *   LOVABLE_API_KEY  — preferred on Lovable Cloud. Proxies Gemini and handles
- *                      billing. Read from `process.env.LOVABLE_API_KEY`.
- *   GEMINI_API_KEY   — use this if you call Google's Gemini REST API directly
- *                      (e.g. after migrating off Lovable). Swap the fetch URL
- *                      + auth header in `callRescueModel` accordingly.
+ *   GEMINI_API_KEY  — Google AI Studio key. Used to call Gemini's
+ *                     generateContent endpoint directly (no gateway).
+ *                     Get/rotate at https://aistudio.google.com/apikey
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -231,56 +229,74 @@ Generate the full rescue pack using the rescue_pack tool.`;
 
 // ── AI call ────────────────────────────────────────────────────────────────
 
+// Calls Google's Gemini API directly (NOT via the Lovable AI Gateway).
+// Uses the native generateContent endpoint with function calling so we get
+// a structured rescue pack back.
+const GEMINI_MODEL = "gemini-2.5-flash";
+
 async function callRescueModel(input: RescueInput): Promise<RawRescuePack> {
-  const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY is not configured");
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY is not configured");
   }
 
-  const response = await fetch(
-    "https://ai.gateway.lovable.dev/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: RESCUE_SYSTEM_PROMPT }],
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: RESCUE_SYSTEM_PROMPT },
-          { role: "user", content: buildUserPrompt(input) },
-        ],
-        tools: [RESCUE_TOOL_SCHEMA],
-        tool_choice: {
-          type: "function",
-          function: { name: "rescue_pack" },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: buildUserPrompt(input) }],
         },
-      }),
-    }
-  );
+      ],
+      tools: [
+        {
+          functionDeclarations: [
+            {
+              name: RESCUE_TOOL_SCHEMA.function.name,
+              description: RESCUE_TOOL_SCHEMA.function.description,
+              parameters: RESCUE_TOOL_SCHEMA.function.parameters,
+            },
+          ],
+        },
+      ],
+      toolConfig: {
+        functionCallingConfig: {
+          mode: "ANY",
+          allowedFunctionNames: [RESCUE_TOOL_SCHEMA.function.name],
+        },
+      },
+    }),
+  });
 
   if (response.status === 429) {
     throw new Error("Rate limit reached. Please try again in a moment.");
   }
-  if (response.status === 402) {
-    throw new Error(
-      "AI credits exhausted. Add funds in Settings → Workspace → Usage."
-    );
-  }
   if (!response.ok) {
     const text = await response.text();
-    console.error("AI gateway error:", response.status, text);
-    throw new Error("AI gateway error. Please try again.");
+    console.error("Gemini API error:", response.status, text);
+    throw new Error("AI service error. Please try again.");
   }
 
   const json = await response.json();
-  const call = json.choices?.[0]?.message?.tool_calls?.[0];
-  if (!call?.function?.arguments) {
+  const parts = json?.candidates?.[0]?.content?.parts ?? [];
+  const fnPart = parts.find(
+    (p: { functionCall?: { name: string; args: unknown } }) =>
+      p.functionCall?.name === RESCUE_TOOL_SCHEMA.function.name
+  );
+  const args = fnPart?.functionCall?.args;
+  if (!args) {
+    console.error("Gemini returned no functionCall:", JSON.stringify(json));
     throw new Error("AI did not return a structured rescue pack.");
   }
 
-  return JSON.parse(call.function.arguments) as RawRescuePack;
+  return args as RawRescuePack;
 }
 
 // ── Normalization ──────────────────────────────────────────────────────────
