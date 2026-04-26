@@ -13,7 +13,7 @@ import {
   Crown,
   Star,
 } from "lucide-react";
-import { CHECKOUT_URLS } from "@/lib/checkout";
+import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
@@ -59,6 +59,9 @@ function Dashboard() {
   const used = count ?? 0;
   const creditsRemaining = Math.max(FREE_CREDITS - used, 0);
   const outOfCredits = creditsRemaining === 0;
+  const upgradeUrl = getStarterCheckoutUrl();
+  const upgradeExternal =
+    hasExternalStarterCheckout() && /^https?:\/\//i.test(upgradeUrl);
 
   return (
     <div className="space-y-6">
@@ -73,7 +76,10 @@ function Dashboard() {
         </div>
         <div className="flex gap-2">
           <Button asChild variant="outline">
-            <a href={CHECKOUT_URLS.starter} target="_blank" rel="noreferrer">
+            <a
+              href={upgradeUrl}
+              {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
+            >
               <Crown className="mr-1.5 h-4 w-4" /> Upgrade
             </a>
           </Button>
@@ -153,7 +159,7 @@ function Dashboard() {
             <h3 className="text-lg font-semibold">
               {outOfCredits
                 ? "Out of free credits"
-                : "Unlock 10 full rescue packs for $9"}
+                : "Unlock 10 full rescue packs for $19"}
             </h3>
             <p className="text-sm text-muted-foreground">
               Get all 3 public reply drafts, the private recovery message, owner
@@ -161,8 +167,11 @@ function Dashboard() {
             </p>
           </div>
           <Button asChild size="lg" className="w-full sm:w-auto">
-            <a href={CHECKOUT_URLS.starter} target="_blank" rel="noreferrer">
-              Unlock for $9
+            <a
+              href={upgradeUrl}
+              {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
+            >
+              Unlock full rescue pack — $19
             </a>
           </Button>
         </CardContent>
