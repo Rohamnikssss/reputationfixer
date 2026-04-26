@@ -20,11 +20,9 @@
  * API KEY
  * ────────────────────────────────────────────────────────────────────────────
  * Server-only env vars (never expose to the client):
- *   LOVABLE_API_KEY  — preferred on Lovable Cloud. Proxies Gemini and handles
- *                      billing. Read from `process.env.LOVABLE_API_KEY`.
- *   GEMINI_API_KEY   — use this if you call Google's Gemini REST API directly
- *                      (e.g. after migrating off Lovable). Swap the fetch URL
- *                      + auth header in `callRescueModel` accordingly.
+ *   GEMINI_API_KEY  — Google AI Studio key. Used to call Gemini's
+ *                     generateContent endpoint directly (no gateway).
+ *                     Get/rotate at https://aistudio.google.com/apikey
  * ────────────────────────────────────────────────────────────────────────────
  */
 
