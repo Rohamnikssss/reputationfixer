@@ -1,55 +1,60 @@
 /**
  * ────────────────────────────────────────────────────────────────────────────
- * Checkout configuration (Lemon Squeezy)
+ * Checkout configuration (Polar — coming soon)
  * ────────────────────────────────────────────────────────────────────────────
  *
- * Replace the placeholder URLs with real Lemon Squeezy product checkout links.
+ * We will use Polar as the payment provider. Real checkout is NOT connected
+ * yet. Until a real Polar checkout URL is configured, every "Unlock" /
+ * "Upgrade" / "Starter Pack" button falls back to the in-app early-access
+ * form at /request-access.
  *
- * Recommended: set these as environment variables so URLs can change without
- * a code deploy. The expected env var names are:
+ * To wire up Polar later, set ONE environment variable. Either name works:
  *
- *   NEXT_PUBLIC_LEMON_STARTER_CHECKOUT_URL   → $9 one-time, 10 rescue packs
- *   NEXT_PUBLIC_LEMON_PRO_CHECKOUT_URL       → $29/mo, 100 rescue packs
- *   NEXT_PUBLIC_LEMON_AGENCY_CHECKOUT_URL    → $99/mo, 500 rescue packs
+ *   NEXT_PUBLIC_POLAR_STARTER_CHECKOUT_URL   (preferred)
+ *   VITE_POLAR_STARTER_CHECKOUT_URL          (alternate)
  *
- * NOTE: This project runs on TanStack Start + Vite, which exposes client-side
- * env vars via `import.meta.env`. Any var starting with `VITE_` or
- * `NEXT_PUBLIC_` is safely embedded in the client bundle. We read both forms
- * and fall back to the placeholder URL below.
- *
- * To configure: add the NEXT_PUBLIC_* vars in your hosting provider
- * (e.g. Vercel, Netlify, Cloudflare) or in a local `.env.local` file.
+ * Vite exposes any env var starting with VITE_ or NEXT_PUBLIC_ on
+ * `import.meta.env` at build time. Set the variable in your hosting
+ * provider (Cloudflare / Vercel / Netlify) or in a local `.env.local`.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
-// Vite exposes string env vars on import.meta.env at build time.
 const env = import.meta.env as Record<string, string | undefined>;
 
-const FALLBACK_URLS = {
-  starter: "https://checkout.lemonsqueezy.com/buy/placeholder-starter-9",
-  pro: "https://checkout.lemonsqueezy.com/buy/placeholder-pro-29",
-  agency: "https://checkout.lemonsqueezy.com/buy/placeholder-agency-99",
-};
+/**
+ * Where every Starter / Upgrade / Unlock button should point.
+ *
+ * - If a Polar checkout URL is configured, return it.
+ * - Otherwise return the in-app early-access form path.
+ */
+export function getStarterCheckoutUrl(): string {
+  return (
+    env.NEXT_PUBLIC_POLAR_STARTER_CHECKOUT_URL ??
+    env.VITE_POLAR_STARTER_CHECKOUT_URL ??
+    "/request-access?plan=starter"
+  );
+}
 
-export const CHECKOUT_URLS = {
-  starter:
-    env.NEXT_PUBLIC_LEMON_STARTER_CHECKOUT_URL ??
-    env.VITE_LEMON_STARTER_CHECKOUT_URL ??
-    FALLBACK_URLS.starter,
-  pro:
-    env.NEXT_PUBLIC_LEMON_PRO_CHECKOUT_URL ??
-    env.VITE_LEMON_PRO_CHECKOUT_URL ??
-    FALLBACK_URLS.pro,
-  agency:
-    env.NEXT_PUBLIC_LEMON_AGENCY_CHECKOUT_URL ??
-    env.VITE_LEMON_AGENCY_CHECKOUT_URL ??
-    FALLBACK_URLS.agency,
+/**
+ * Whether the current build has a real external Polar checkout URL
+ * configured. UI uses this to decide between `target="_blank"` (external
+ * checkout) vs internal client-side navigation to the request-access form.
+ */
+export function hasExternalStarterCheckout(): boolean {
+  return Boolean(
+    env.NEXT_PUBLIC_POLAR_STARTER_CHECKOUT_URL ??
+      env.VITE_POLAR_STARTER_CHECKOUT_URL
+  );
+}
+
+/**
+ * Pro and Agency plans are intentionally NOT connected to a checkout yet.
+ * Their CTAs route to the same in-app early-access form, pre-tagged with
+ * the plan the visitor is interested in.
+ */
+export const REQUEST_ACCESS_URLS = {
+  pro: "/request-access?plan=pro",
+  agency: "/request-access?plan=agency",
 } as const;
 
-export type PlanKey = keyof typeof CHECKOUT_URLS;
-
-export const PLAN_LABELS: Record<PlanKey, string> = {
-  starter: "Starter — $9 for 10 rescue packs",
-  pro: "Pro — $29/mo for 100 rescue packs",
-  agency: "Agency Beta — $99/mo for 500 rescue packs",
-};
+export type PlanKey = "starter" | "pro" | "agency";

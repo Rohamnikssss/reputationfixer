@@ -69,7 +69,7 @@ function LoginPage() {
             <Sparkles className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="font-semibold tracking-tight">
-            Reputation Rescue AI
+            Reputation Fixer AI
           </span>
         </Link>
 

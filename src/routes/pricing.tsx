@@ -4,58 +4,60 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CHECKOUT_URLS } from "@/lib/checkout";
+import {
+  getStarterCheckoutUrl,
+  hasExternalStarterCheckout,
+  REQUEST_ACCESS_URLS,
+} from "@/lib/checkout";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Reputation Rescue AI" },
+      { title: "Pricing — Reputation Fixer AI" },
       {
         name: "description",
         content:
-          "Simple per-pack pricing. Free preview, Starter, Pro, and Agency Beta plans.",
+          "Free preview, $19 Starter Pack, Pro coming soon, Agency Beta by request.",
       },
-      { property: "og:title", content: "Pricing — Reputation Rescue AI" },
+      { property: "og:title", content: "Pricing — Reputation Fixer AI" },
       {
         property: "og:description",
-        content: "Rescue bad reviews starting at $9. No long contracts.",
+        content: "Rescue bad reviews starting at $19. No long contracts.",
       },
     ],
   }),
   component: PricingPage,
 });
 
-const plans: {
+type Plan = {
   name: string;
   price: string;
   cadence: string;
   blurb: string;
   cta: string;
-  href?: string;
-  to?: "/login";
+  /** External checkout URL — opens in a new tab */
+  externalHref?: string;
+  /** Internal request-access form (preferred for unconnected plans) */
+  requestAccessPlan?: "starter" | "pro" | "agency";
+  /** Free plan → signup */
+  signup?: boolean;
   features: string[];
   featured?: boolean;
-}[] = [
-  {
-    name: "Free",
-    price: "$0",
-    cadence: "forever",
-    blurb: "Try before you buy.",
-    cta: "Start free",
-    to: "/login",
-    features: [
-      "1 public reply preview",
-      "Short public reply draft",
-      "Guardrail disclaimer",
-    ],
-  },
-  {
-    name: "Starter",
-    price: "$9",
+  disabled?: boolean;
+  badge?: string;
+};
+
+function buildPlans(): Plan[] {
+  const starterUrl = getStarterCheckoutUrl();
+  const starterIsExternal =
+    hasExternalStarterCheckout() && /^https?:\/\//i.test(starterUrl);
+
+  const starter: Plan = {
+    name: "Starter Pack",
+    price: "$19",
     cadence: "one-time",
     blurb: "For the occasional bad review.",
-    cta: "Get Starter — $9",
-    href: CHECKOUT_URLS.starter,
+    cta: "Get Starter Pack — $19",
     features: [
       "10 full rescue packs",
       "All 3 public reply drafts",
@@ -63,39 +65,63 @@ const plans: {
       "Owner action checklist",
       "Flag / report guidance",
     ],
-  },
-  {
-    name: "Pro",
-    price: "$29",
-    cadence: "/ month",
-    blurb: "Most restaurants pick this.",
-    cta: "Go Pro",
-    href: CHECKOUT_URLS.pro,
-    features: [
-      "100 rescue packs / month",
-      "Everything in Starter",
-      "Saved generations library",
-      "Priority AI queue",
-    ],
     featured: true,
-  },
-  {
-    name: "Agency Beta",
-    price: "$99",
-    cadence: "/ month",
-    blurb: "Manage multiple locations.",
-    cta: "Join beta",
-    href: CHECKOUT_URLS.agency,
-    features: [
-      "500 rescue packs / month",
-      "Unlimited business profiles",
-      "Beta features early access",
-      "Email support",
-    ],
-  },
-];
+    badge: "Most popular",
+    ...(starterIsExternal
+      ? { externalHref: starterUrl }
+      : { requestAccessPlan: "starter" as const }),
+  };
+
+  return [
+    {
+      name: "Free",
+      price: "$0",
+      cadence: "forever",
+      blurb: "Try before you buy.",
+      cta: "Start free",
+      signup: true,
+      features: [
+        "1 public reply preview",
+        "Short public reply draft",
+        "Guardrail disclaimer",
+      ],
+    },
+    starter,
+    {
+      name: "Pro",
+      price: "$29",
+      cadence: "/ month",
+      blurb: "Most restaurants will pick this.",
+      cta: "Coming soon",
+      disabled: true,
+      badge: "Coming soon",
+      features: [
+        "100 rescue packs / month",
+        "Everything in Starter Pack",
+        "Saved generations library",
+        "Priority AI queue",
+      ],
+    },
+    {
+      name: "Agency Beta",
+      price: "$99",
+      cadence: "/ month",
+      blurb: "Manage multiple locations.",
+      cta: "Request access",
+      requestAccessPlan: "agency",
+      features: [
+        "500 rescue packs / month",
+        "Unlimited business profiles",
+        "Beta features early access",
+        "Email support",
+      ],
+    },
+  ];
+}
 
 function PricingPage() {
+  const plans = buildPlans();
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
@@ -124,12 +150,20 @@ function PricingPage() {
               key={p.name}
               className={cn(
                 "relative flex flex-col shadow-card",
-                p.featured && "border-primary/50 shadow-glow"
+                p.featured && "border-primary/50 shadow-glow",
+                p.disabled && "opacity-90"
               )}
             >
-              {p.featured && (
-                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-primary px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground">
-                  Most popular
+              {p.badge && (
+                <div
+                  className={cn(
+                    "absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                    p.featured
+                      ? "bg-gradient-primary text-primary-foreground"
+                      : "border border-border bg-card text-muted-foreground"
+                  )}
+                >
+                  {p.badge}
                 </div>
               )}
               <CardContent className="flex flex-1 flex-col p-6">
@@ -155,15 +189,37 @@ function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                {p.href ? (
+                {p.disabled ? (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    disabled
+                    aria-disabled="true"
+                  >
+                    {p.cta}
+                  </Button>
+                ) : p.externalHref ? (
                   <Button
                     asChild
                     variant={p.featured ? "default" : "outline"}
                     className="w-full"
                   >
-                    <a href={p.href} target="_blank" rel="noreferrer">
+                    <a href={p.externalHref} target="_blank" rel="noreferrer">
                       {p.cta}
                     </a>
+                  </Button>
+                ) : p.requestAccessPlan ? (
+                  <Button
+                    asChild
+                    variant={p.featured ? "default" : "outline"}
+                    className="w-full"
+                  >
+                    <Link
+                      to="/request-access"
+                      search={{ plan: p.requestAccessPlan }}
+                    >
+                      {p.cta}
+                    </Link>
                   </Button>
                 ) : (
                   <Button
@@ -171,7 +227,7 @@ function PricingPage() {
                     variant={p.featured ? "default" : "outline"}
                     className="w-full"
                   >
-                    <Link to={p.to ?? "/login"} search={{ mode: "signup" }}>
+                    <Link to="/login" search={{ mode: "signup" }}>
                       {p.cta}
                     </Link>
                   </Button>
@@ -185,6 +241,12 @@ function PricingPage() {
           All plans include the disclaimer: AI outputs are drafts and must be
           reviewed by the business owner before posting.
         </p>
+
+        {/* Silence unused-import warning when no Pro/Agency external links exist */}
+        <span className="hidden" aria-hidden>
+          {REQUEST_ACCESS_URLS.pro}
+          {REQUEST_ACCESS_URLS.agency}
+        </span>
       </section>
 
       <SiteFooter />

@@ -4,10 +4,10 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — Reputation Rescue AI" },
+      { title: "Terms of Service — Reputation Fixer AI" },
       {
         name: "description",
-        content: "Terms governing use of Reputation Rescue AI.",
+        content: "Terms governing use of Reputation Fixer AI.",
       },
     ],
   }),
@@ -28,7 +28,7 @@ function TermsPage() {
 
         <div className="space-y-8 text-foreground/90">
           <Section title="1. Acceptance">
-            By using Reputation Rescue AI ("Service"), you agree to these Terms.
+            By using Reputation Fixer AI ("Service"), you agree to these Terms.
             If you do not agree, do not use the Service.
           </Section>
           <Section title="2. AI-generated drafts only">
@@ -75,7 +75,7 @@ function TermsPage() {
             situation. Review every draft before use.
           </Section>
           <Section title="9. Limitation of liability">
-            To the maximum extent permitted by law, Reputation Rescue AI is not
+            To the maximum extent permitted by law, Reputation Fixer AI is not
             liable for indirect, incidental, special, consequential, or
             punitive damages — including damage to reputation, lost revenue,
             or lost customers — arising from your use of the Service.
@@ -85,7 +85,7 @@ function TermsPage() {
             acceptance.
           </Section>
           <Section title="11. Contact">
-            Questions? Email support@reputationrescue.ai.
+            Questions? Email [PUT MY REAL EMAIL HERE].
           </Section>
         </div>
       </article>

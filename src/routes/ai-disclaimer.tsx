@@ -6,13 +6,13 @@ import { ShieldAlert } from "lucide-react";
 export const Route = createFileRoute("/ai-disclaimer")({
   head: () => ({
     meta: [
-      { title: "AI Disclaimer — Reputation Rescue AI" },
+      { title: "AI Disclaimer — Reputation Fixer AI" },
       {
         name: "description",
         content:
           "How to safely use AI-generated review replies. Drafts only — review before posting. No guarantee of removal.",
       },
-      { property: "og:title", content: "AI Disclaimer — Reputation Rescue AI" },
+      { property: "og:title", content: "AI Disclaimer — Reputation Fixer AI" },
       {
         property: "og:description",
         content:
@@ -47,7 +47,7 @@ function AiDisclaimerPage() {
               review removal.
             </strong>{" "}
             Every reply, message, checklist, and flagging note produced by
-            Reputation Rescue AI is a draft suggestion — not a finished,
+            Reputation Fixer AI is a draft suggestion — not a finished,
             approved, or fact-checked response.
           </CardContent>
         </Card>
@@ -61,7 +61,7 @@ function AiDisclaimerPage() {
           </Section>
 
           <Section title="2. You are the publisher">
-            Reputation Rescue AI never connects to your Google Business Profile,
+            Reputation Fixer AI never connects to your Google Business Profile,
             Yelp, TripAdvisor, or any other platform. Nothing is auto-posted.
             Every public reply is posted by you, on your account, under your
             business name — and you take full responsibility for it.

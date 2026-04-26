@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as RequestAccessRouteImport } from './routes/request-access'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
@@ -24,6 +25,11 @@ import { Route as AppGenerateRouteImport } from './routes/app.generate'
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestAccessRoute = RequestAccessRouteImport.update({
+  id: '/request-access',
+  path: '/request-access',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/request-access': typeof RequestAccessRoute
   '/terms': typeof TermsRoute
   '/app/generate': typeof AppGenerateRoute
   '/app/saved': typeof AppSavedRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/request-access': typeof RequestAccessRoute
   '/terms': typeof TermsRoute
   '/app/generate': typeof AppGenerateRoute
   '/app/saved': typeof AppSavedRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/request-access': typeof RequestAccessRoute
   '/terms': typeof TermsRoute
   '/app/generate': typeof AppGenerateRoute
   '/app/saved': typeof AppSavedRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/request-access'
     | '/terms'
     | '/app/generate'
     | '/app/saved'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/request-access'
     | '/terms'
     | '/app/generate'
     | '/app/saved'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/request-access'
     | '/terms'
     | '/app/generate'
     | '/app/saved'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  RequestAccessRoute: typeof RequestAccessRoute
   TermsRoute: typeof TermsRoute
 }
 
@@ -175,6 +188,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request-access': {
+      id: '/request-access'
+      path: '/request-access'
+      fullPath: '/request-access'
+      preLoaderRoute: typeof RequestAccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -272,6 +292,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  RequestAccessRoute: RequestAccessRoute,
   TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport

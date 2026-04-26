@@ -35,7 +35,7 @@ function AppLayout() {
               <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="text-sm font-semibold tracking-tight">
-              Reputation Rescue AI
+              Reputation Fixer AI
             </span>
           </Link>
           <div className="flex items-center gap-2">

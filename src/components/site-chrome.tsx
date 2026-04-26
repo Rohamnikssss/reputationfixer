@@ -14,7 +14,7 @@ export function SiteHeader() {
             <Sparkles className="h-4 w-4 text-primary-foreground" />
           </div>
           <span className="text-sm font-semibold tracking-tight">
-            Reputation Rescue AI
+            Reputation Fixer AI
           </span>
         </Link>
 
@@ -86,7 +86,7 @@ export function SiteFooter() {
     <footer className="border-t border-border/60 bg-background">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div>
-          © {new Date().getFullYear()} Reputation Rescue AI. AI outputs are drafts
+          © {new Date().getFullYear()} Reputation Fixer AI. AI outputs are drafts
           — review before posting.
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-2">

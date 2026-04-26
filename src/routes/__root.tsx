@@ -31,13 +31,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Reputation Rescue AI — Reply to bad Google reviews in 30 seconds" },
+      { title: "Reputation Fixer AI — Reply to bad Google reviews in 30 seconds" },
       {
         name: "description",
         content:
           "Turn angry Google reviews into calm public replies, private recovery messages, and owner action checklists — without sounding defensive.",
       },
-      { property: "og:title", content: "Reputation Rescue AI — Reply to bad Google reviews in 30 seconds" },
+      { property: "og:title", content: "Reputation Fixer AI — Reply to bad Google reviews in 30 seconds" },
       {
         property: "og:description",
         content:
@@ -45,7 +45,7 @@ export const Route = createRootRoute({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Reputation Rescue AI — Reply to bad Google reviews in 30 seconds" },
+      { name: "twitter:title", content: "Reputation Fixer AI — Reply to bad Google reviews in 30 seconds" },
       { name: "description", content: "AI-powered tool for restaurants to generate professional replies to negative Google reviews." },
       { property: "og:description", content: "AI-powered tool for restaurants to generate professional replies to negative Google reviews." },
       { name: "twitter:description", content: "AI-powered tool for restaurants to generate professional replies to negative Google reviews." },

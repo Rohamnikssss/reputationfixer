@@ -4,10 +4,10 @@ import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Reputation Rescue AI" },
+      { title: "Privacy Policy — Reputation Fixer AI" },
       {
         name: "description",
-        content: "How Reputation Rescue AI collects, uses, and protects your data.",
+        content: "How Reputation Fixer AI collects, uses, and protects your data.",
       },
     ],
   }),
@@ -66,14 +66,14 @@ function PrivacyPage() {
           <Section title="6. Deletion">
             You can delete any saved rescue at any time from the Saved page.
             To delete your account and all associated data, contact
-            support@reputationrescue.ai.
+            [PUT MY REAL EMAIL HERE].
           </Section>
           <Section title="7. Security">
             We use encryption in transit. No system is 100% secure — use a
             strong password and don't share your login.
           </Section>
           <Section title="8. Contact">
-            Privacy questions: privacy@reputationrescue.ai.
+            Privacy questions: [PUT MY REAL EMAIL HERE].
           </Section>
         </div>
       </article>
