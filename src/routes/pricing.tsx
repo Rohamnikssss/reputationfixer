@@ -37,9 +37,10 @@ type Plan = {
   cta: string;
   /** External checkout URL — opens in a new tab */
   externalHref?: string;
-  /** Internal app route — uses TanStack <Link> */
-  internalTo?: "/login" | "/request-access";
-  internalSearch?: Record<string, string>;
+  /** Internal request-access form (preferred for unconnected plans) */
+  requestAccessPlan?: "starter" | "pro" | "agency";
+  /** Free plan → signup */
+  signup?: boolean;
   features: string[];
   featured?: boolean;
   disabled?: boolean;
@@ -68,7 +69,7 @@ function buildPlans(): Plan[] {
     badge: "Most popular",
     ...(starterIsExternal
       ? { externalHref: starterUrl }
-      : { internalTo: "/request-access", internalSearch: { plan: "starter" } }),
+      : { requestAccessPlan: "starter" as const }),
   };
 
   return [
@@ -78,8 +79,7 @@ function buildPlans(): Plan[] {
       cadence: "forever",
       blurb: "Try before you buy.",
       cta: "Start free",
-      internalTo: "/login",
-      internalSearch: { mode: "signup" },
+      signup: true,
       features: [
         "1 public reply preview",
         "Short public reply draft",
@@ -108,8 +108,7 @@ function buildPlans(): Plan[] {
       cadence: "/ month",
       blurb: "Manage multiple locations.",
       cta: "Request access",
-      internalTo: "/request-access",
-      internalSearch: { plan: "agency" },
+      requestAccessPlan: "agency",
       features: [
         "500 rescue packs / month",
         "Unlimited business profiles",
@@ -209,27 +208,28 @@ function PricingPage() {
                       {p.cta}
                     </a>
                   </Button>
+                ) : p.requestAccessPlan ? (
+                  <Button
+                    asChild
+                    variant={p.featured ? "default" : "outline"}
+                    className="w-full"
+                  >
+                    <Link
+                      to="/request-access"
+                      search={{ plan: p.requestAccessPlan }}
+                    >
+                      {p.cta}
+                    </Link>
+                  </Button>
                 ) : (
                   <Button
                     asChild
                     variant={p.featured ? "default" : "outline"}
                     className="w-full"
                   >
-                    {p.internalTo === "/request-access" ? (
-                      <Link
-                        to="/request-access"
-                        search={p.internalSearch as { plan?: string }}
-                      >
-                        {p.cta}
-                      </Link>
-                    ) : (
-                      <Link
-                        to="/login"
-                        search={p.internalSearch as { mode?: "signin" | "signup" }}
-                      >
-                        {p.cta}
-                      </Link>
-                    )}
+                    <Link to="/login" search={{ mode: "signup" }}>
+                      {p.cta}
+                    </Link>
                   </Button>
                 )}
               </CardContent>

@@ -64,27 +64,30 @@ function RequestAccessPage() {
     setBusy(true);
     try {
       // Best-effort persist into Supabase if a `request_access` table exists.
-      // If the table is missing or RLS blocks anonymous insert, we still show
-      // the success state so the user is never blocked. (Email follow-up is
-      // handled out of band by the operator.)
-      const { error } = await supabase
-        // @ts-expect-error optional table — created lazily by the operator
-        .from("request_access")
-        .insert({
-          name,
-          email,
-          restaurant_name: restaurantName,
-          plan,
-          message,
-        });
-      if (error && process.env.NODE_ENV !== "production") {
+      // The table isn't in the generated types yet — cast through `unknown` so
+      // the build doesn't depend on a migration. If the table is missing or
+      // RLS blocks anonymous insert, we still show the success state so the
+      // user is never blocked. (Email follow-up is handled out of band.)
+      const client = supabase as unknown as {
+        from: (table: string) => {
+          insert: (row: Record<string, unknown>) => Promise<{ error: unknown }>;
+        };
+      };
+      const { error } = await client.from("request_access").insert({
+        name,
+        email,
+        restaurant_name: restaurantName,
+        plan,
+        message,
+      });
+      if (error && import.meta.env.DEV) {
         // eslint-disable-next-line no-console
-        console.warn("[request-access] insert failed:", error.message);
+        console.warn("[request-access] insert failed:", error);
       }
       setSubmitted(true);
     } catch (err) {
       // Same fallback — don't block the user on storage errors.
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         // eslint-disable-next-line no-console
         console.warn("[request-access] error:", err);
       }
