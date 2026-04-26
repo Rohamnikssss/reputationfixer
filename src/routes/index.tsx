@@ -7,7 +7,7 @@ import { RescueResult, UnlockCTA } from "@/components/rescue-result";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
-import { CHECKOUT_URLS } from "@/lib/checkout";
+import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
 import {
   Sparkles,
   ShieldCheck,
@@ -82,7 +82,7 @@ function LandingPage() {
               </span>
             </h1>
             <p className="mx-auto mt-7 max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
-              Reputation Rescue AI helps restaurants turn angry Google reviews
+              Reputation Fixer AI helps restaurants turn angry Google reviews
               into calm public replies, private recovery messages, and action
               checklists — without sounding defensive.
             </p>
@@ -203,17 +203,22 @@ function LandingPage() {
                 </Button>
               </div>
 
-              <UnlockCTA href={CHECKOUT_URLS.starter} />
+              <UnlockCTA />
 
               <RescueResult
                 pack={pack}
                 gated
                 onUnlock={() => {
-                  window.open(CHECKOUT_URLS.starter, "_blank", "noreferrer");
+                  const url = getStarterCheckoutUrl();
+                  if (hasExternalStarterCheckout() && /^https?:\/\//i.test(url)) {
+                    window.open(url, "_blank", "noreferrer");
+                  } else {
+                    window.location.href = url;
+                  }
                 }}
               />
 
-              <UnlockCTA href={CHECKOUT_URLS.starter} />
+              <UnlockCTA />
             </div>
           )}
         </div>
