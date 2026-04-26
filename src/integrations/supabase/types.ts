@@ -81,12 +81,12 @@ export type Database = {
           currency: string
           email: string
           id: string
-          lemon_order_id: string | null
           plan: string
+          provider_order_id: string | null
           raw_payload: Json | null
           status: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           amount_cents: number
@@ -94,12 +94,12 @@ export type Database = {
           currency?: string
           email: string
           id?: string
-          lemon_order_id?: string | null
           plan: string
+          provider_order_id?: string | null
           raw_payload?: Json | null
           status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           amount_cents?: number
@@ -107,12 +107,12 @@ export type Database = {
           currency?: string
           email?: string
           id?: string
-          lemon_order_id?: string | null
           plan?: string
+          provider_order_id?: string | null
           raw_payload?: Json | null
           status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
