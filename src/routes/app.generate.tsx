@@ -114,7 +114,13 @@ function GeneratePage() {
             Paste the review, pick a tone, get the full pack.
           </p>
         </div>
-        {usedCredits !== null && (
+        {isAdmin ? (
+          <div className="text-xs">
+            <span className="rounded-md bg-primary/15 px-2 py-1 font-medium text-primary">
+              Admin · unlimited
+            </span>
+          </div>
+        ) : usedCredits !== null && (
           <div className="text-xs text-muted-foreground">
             <span className="font-medium text-foreground">
               {creditsRemaining}
