@@ -39,7 +39,18 @@ function LandingPage() {
           ?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 50);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Something went wrong");
+      // The server function requires auth — a Response (not an Error) is thrown
+      // on 401. Detect that and guide the user to sign in instead of crashing.
+      const isResponse =
+        typeof Response !== "undefined" && e instanceof Response;
+      const status = isResponse ? (e as Response).status : null;
+      if (status === 401 || status === 403) {
+        toast.error("Please sign in to generate a rescue pack — it's free.");
+      } else if (e instanceof Error) {
+        toast.error(e.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
