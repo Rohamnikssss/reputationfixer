@@ -60,27 +60,38 @@ export const generateRescuePack = createServerFn({ method: "POST" })
   .middleware([forwardSupabaseAuth, requireSupabaseAuth])
   .inputValidator((input: unknown) => RescueInputSchema.parse(input))
   .handler(async ({ data, context }) => {
-    // Server-side credit enforcement.
-    // The browser also gates this for UX, but the browser cannot be trusted —
-    // so we re-check here using the authenticated user's own RLS-scoped
-    // supabase client.
-    const { count, error: countError } = await context.supabase
-      .from("generations")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", context.userId);
+    // Admins bypass the free-credit gate entirely (test mode / owner access).
+    const { data: adminRow } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    const isAdmin = !!adminRow;
 
-    if (countError) {
-      // Don't leak raw DB errors; log server-side, return a safe message.
-      // eslint-disable-next-line no-console
-      console.error("[generateRescuePack] credit-count failed:", countError);
-      throw new Error("Could not verify your remaining credits. Try again.");
+    if (!isAdmin) {
+      // Server-side credit enforcement.
+      // The browser also gates this for UX, but the browser cannot be trusted —
+      // so we re-check here using the authenticated user's own RLS-scoped
+      // supabase client.
+      const { count, error: countError } = await context.supabase
+        .from("generations")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", context.userId);
+
+      if (countError) {
+        // eslint-disable-next-line no-console
+        console.error("[generateRescuePack] credit-count failed:", countError);
+        throw new Error("Could not verify your remaining credits. Try again.");
+      }
+
+      if ((count ?? 0) >= FREE_CREDITS) {
+        throw new Error(
+          "You've used all your free rescue packs. Upgrade to keep generating."
+        );
+      }
     }
 
-    if ((count ?? 0) >= FREE_CREDITS) {
-      throw new Error(
-        "You've used all your free rescue packs. Upgrade to keep generating."
-      );
-    }
 
     return generateRescuePackCore(data);
   });

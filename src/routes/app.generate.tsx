@@ -21,7 +21,7 @@ export const Route = createFileRoute("/app/generate")({
 const FREE_CREDITS = 3;
 
 function GeneratePage() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pack, setPack] = useState<RescuePack | null>(null);
@@ -41,7 +41,8 @@ function GeneratePage() {
   }, [user]);
 
   const creditsRemaining = Math.max(FREE_CREDITS - (usedCredits ?? 0), 0);
-  const outOfCredits = usedCredits !== null && creditsRemaining === 0;
+  // Admins bypass the paywall entirely (test mode / owner access).
+  const outOfCredits = !isAdmin && usedCredits !== null && creditsRemaining === 0;
 
   const run = async (v: RescueInput) => {
     if (!user) return;
@@ -113,7 +114,13 @@ function GeneratePage() {
             Paste the review, pick a tone, get the full pack.
           </p>
         </div>
-        {usedCredits !== null && (
+        {isAdmin ? (
+          <div className="text-xs">
+            <span className="rounded-md bg-primary/15 px-2 py-1 font-medium text-primary">
+              Admin · unlimited
+            </span>
+          </div>
+        ) : usedCredits !== null && (
           <div className="text-xs text-muted-foreground">
             <span className="font-medium text-foreground">
               {creditsRemaining}
@@ -183,12 +190,14 @@ function GeneratePage() {
             )}
           </div>
           <RescueResult pack={pack} />
-          <div className="pt-2">
-            <UnlockCTA />
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              Need more rescue packs? <Link to="/pricing" className="underline hover:text-foreground">See pricing</Link>.
-            </p>
-          </div>
+          {!isAdmin && (
+            <div className="pt-2">
+              <UnlockCTA />
+              <p className="mt-3 text-center text-xs text-muted-foreground">
+                Need more rescue packs? <Link to="/pricing" className="underline hover:text-foreground">See pricing</Link>.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
