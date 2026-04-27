@@ -75,14 +75,16 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <a
-              href={upgradeUrl}
-              {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-            >
-              <Crown className="mr-1.5 h-4 w-4" /> Upgrade
-            </a>
-          </Button>
+          {!isAdmin && (
+            <Button asChild variant="outline">
+              <a
+                href={upgradeUrl}
+                {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
+              >
+                <Crown className="mr-1.5 h-4 w-4" /> Upgrade
+              </a>
+            </Button>
+          )}
           <Button asChild>
             <Link to="/app/generate">
               <Plus className="mr-1.5 h-4 w-4" /> New rescue
