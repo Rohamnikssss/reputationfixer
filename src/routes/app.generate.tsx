@@ -190,12 +190,14 @@ function GeneratePage() {
             )}
           </div>
           <RescueResult pack={pack} />
-          <div className="pt-2">
-            <UnlockCTA />
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              Need more rescue packs? <Link to="/pricing" className="underline hover:text-foreground">See pricing</Link>.
-            </p>
-          </div>
+          {!isAdmin && (
+            <div className="pt-2">
+              <UnlockCTA />
+              <p className="mt-3 text-center text-xs text-muted-foreground">
+                Need more rescue packs? <Link to="/pricing" className="underline hover:text-foreground">See pricing</Link>.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
