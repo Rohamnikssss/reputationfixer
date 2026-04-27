@@ -24,7 +24,7 @@ export const Route = createFileRoute("/app/")({
 const FREE_CREDITS = 3;
 
 function Dashboard() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [count, setCount] = useState<number | null>(null);
   const [recent, setRecent] = useState<
     {
