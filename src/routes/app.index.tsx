@@ -150,42 +150,46 @@ function Dashboard() {
               <div className="text-xs uppercase tracking-wide text-muted-foreground">
                 Plan
               </div>
-              <div className="mt-0.5 text-2xl font-semibold">Free</div>
+              <div className="mt-0.5 text-2xl font-semibold">
+                {isAdmin ? "Admin" : "Free"}
+              </div>
               <div className="text-xs text-muted-foreground">
-                Upgrade for more
+                {isAdmin ? "Test mode · all features" : "Upgrade for more"}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Upgrade CTA banner */}
-      <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
-        <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
-            <Crown className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold">
-              {outOfCredits
-                ? "Out of free credits"
-                : "Unlock 10 full rescue packs for $19"}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Get all 3 public reply drafts, the private recovery message, owner
-              checklist, and flag guidance for your next 10 reviews.
-            </p>
-          </div>
-          <Button asChild size="lg" className="w-full sm:w-auto">
-            <a
-              href={upgradeUrl}
-              {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-            >
-              Unlock full rescue pack — $19
-            </a>
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Upgrade CTA banner — hidden for admins (test mode) */}
+      {!isAdmin && (
+        <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
+          <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+              <Crown className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold">
+                {outOfCredits
+                  ? "Out of free credits"
+                  : "Unlock 10 full rescue packs for $19"}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Get all 3 public reply drafts, the private recovery message, owner
+                checklist, and flag guidance for your next 10 reviews.
+              </p>
+            </div>
+            <Button asChild size="lg" className="w-full sm:w-auto">
+              <a
+                href={upgradeUrl}
+                {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
+              >
+                Unlock full rescue pack — $19
+              </a>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="shadow-card">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
