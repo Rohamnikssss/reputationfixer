@@ -103,13 +103,14 @@ function ListCard({
 }: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  items: string[];
+  items: string[] | undefined;
   markerClass: string;
   marker: string;
   locked?: boolean;
   onUnlock?: () => void;
 }) {
-  const copyText = items.map((i) => `${marker} ${i}`).join("\n");
+  const safeItems = Array.isArray(items) ? items : [];
+  const copyText = safeItems.map((i) => `${marker} ${i}`).join("\n");
   return (
     <Card className="relative overflow-hidden shadow-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -117,7 +118,7 @@ function ListCard({
           <Icon className="h-4 w-4 text-primary" />
           {label}
         </CardTitle>
-        {!locked && items.length > 0 && <CopyBtn text={copyText} />}
+        {!locked && safeItems.length > 0 && <CopyBtn text={copyText} />}
       </CardHeader>
       <CardContent>
         <ul
@@ -127,9 +128,9 @@ function ListCard({
           )}
           aria-hidden={locked}
         >
-          {(locked && items.length === 0
+          {(locked && safeItems.length === 0
             ? ["████████████████", "████████████", "██████████████████"]
-            : items
+            : safeItems
           ).map((item, i) => (
             <li key={i} className="flex gap-2">
               <span className={markerClass}>{marker}</span>
