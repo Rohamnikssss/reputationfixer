@@ -103,13 +103,14 @@ function ListCard({
 }: {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  items: string[];
+  items: string[] | undefined;
   markerClass: string;
   marker: string;
   locked?: boolean;
   onUnlock?: () => void;
 }) {
-  const copyText = items.map((i) => `${marker} ${i}`).join("\n");
+  const safeItems = Array.isArray(items) ? items : [];
+  const copyText = safeItems.map((i) => `${marker} ${i}`).join("\n");
   return (
     <Card className="relative overflow-hidden shadow-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
