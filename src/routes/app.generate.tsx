@@ -93,11 +93,21 @@ function GeneratePage() {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("[app.generate] generation failed:", e);
-      toast.error(
-        e instanceof Error && /credit|upgrade/i.test(e.message)
-          ? e.message
-          : "Generation failed. Please try again."
-      );
+      const isResponse =
+        typeof Response !== "undefined" && e instanceof Response;
+      const status = isResponse ? (e as Response).status : null;
+      if (status === 401 || status === 403) {
+        toast.error("Your session expired. Please sign in again.");
+        navigate({ to: "/login" });
+      } else if (e instanceof Error) {
+        toast.error(
+          /credit|upgrade/i.test(e.message)
+            ? e.message
+            : "Generation failed. Please try again."
+        );
+      } else {
+        toast.error("Generation failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
