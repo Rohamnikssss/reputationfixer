@@ -21,7 +21,7 @@ export const Route = createFileRoute("/app/generate")({
 const FREE_CREDITS = 3;
 
 function GeneratePage() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pack, setPack] = useState<RescuePack | null>(null);
@@ -41,7 +41,8 @@ function GeneratePage() {
   }, [user]);
 
   const creditsRemaining = Math.max(FREE_CREDITS - (usedCredits ?? 0), 0);
-  const outOfCredits = usedCredits !== null && creditsRemaining === 0;
+  // Admins bypass the paywall entirely (test mode / owner access).
+  const outOfCredits = !isAdmin && usedCredits !== null && creditsRemaining === 0;
 
   const run = async (v: RescueInput) => {
     if (!user) return;
