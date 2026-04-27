@@ -104,12 +104,20 @@ function Dashboard() {
                 Credits remaining
               </div>
               <div className="mt-0.5 text-2xl font-semibold">
-                {creditsRemaining}{" "}
-                <span className="text-sm font-normal text-muted-foreground">
-                  / {FREE_CREDITS}
-                </span>
+                {isAdmin ? (
+                  "∞"
+                ) : (
+                  <>
+                    {creditsRemaining}{" "}
+                    <span className="text-sm font-normal text-muted-foreground">
+                      / {FREE_CREDITS}
+                    </span>
+                  </>
+                )}
               </div>
-              <div className="text-xs text-muted-foreground">Free plan</div>
+              <div className="text-xs text-muted-foreground">
+                {isAdmin ? "Admin · unlimited" : "Free plan"}
+              </div>
             </div>
           </CardContent>
         </Card>
