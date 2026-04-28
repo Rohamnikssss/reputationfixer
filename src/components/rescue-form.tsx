@@ -20,6 +20,9 @@ export interface RescueInput {
   starRating: number;
   tone: "apologetic" | "warm" | "firm" | "professional" | "empathetic";
   ownerContext: string;
+  managerName: string;
+  contactEmail: string;
+  contactPhone: string;
 }
 
 export function RescueForm({
@@ -38,10 +41,17 @@ export function RescueForm({
     starRating: 1,
     tone: "professional",
     ownerContext: "",
+    managerName: "",
+    contactEmail: "",
+    contactPhone: "",
   });
 
+  const hasContact = !!(v.contactEmail.trim() || v.contactPhone.trim());
   const disabled =
-    loading || !v.businessName.trim() || v.reviewText.trim().length < 5;
+    loading ||
+    !v.businessName.trim() ||
+    v.reviewText.trim().length < 5 ||
+    !hasContact;
 
   return (
     <form
