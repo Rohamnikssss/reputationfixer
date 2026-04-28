@@ -133,10 +133,10 @@ function GeneratePage() {
             Paste the review, pick a tone, get the full pack.
           </p>
         </div>
-        {isAdmin ? (
+        {hasUnlockedAccess ? (
           <div className="text-xs">
             <span className="rounded-md bg-primary/15 px-2 py-1 font-medium text-primary">
-              Admin · unlimited
+              {isAdmin ? "Admin · unlimited" : "Unlocked"}
             </span>
           </div>
         ) : usedCredits !== null && (
