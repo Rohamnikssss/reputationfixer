@@ -25,7 +25,16 @@ export const Route = createFileRoute("/app/")({
 const FREE_CREDITS = 3;
 
 function Dashboard() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, hasUnlockedAccess } = useAuth();
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const handleUnlock = async () => {
+    setUnlockLoading(true);
+    const ok = await startUnlockCheckout();
+    if (!ok) {
+      setUnlockLoading(false);
+      toast.error("Could not start checkout. Please try again.");
+    }
+  };
   const [count, setCount] = useState<number | null>(null);
   const [recent, setRecent] = useState<
     {
