@@ -164,8 +164,8 @@ function Dashboard() {
         </Card>
       </div>
 
-      {/* Upgrade CTA banner — hidden for admins (test mode) */}
-      {!isAdmin && (
+      {/* Upgrade CTA banner — hidden for admins/paid users */}
+      {!hasUnlockedAccess && (
         <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
           <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
@@ -182,13 +182,8 @@ function Dashboard() {
                 checklist, and flag guidance for your next 10 reviews.
               </p>
             </div>
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <a
-                href={upgradeUrl}
-                {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-              >
-                Unlock full rescue pack — $19
-              </a>
+            <Button size="lg" className="w-full sm:w-auto" onClick={handleUnlock} disabled={unlockLoading}>
+              {unlockLoading ? "Redirecting…" : "Unlock full rescue pack — $19"}
             </Button>
           </CardContent>
         </Card>
