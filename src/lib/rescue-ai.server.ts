@@ -229,10 +229,26 @@ Generate the full rescue pack using the rescue_pack tool.`;
 
 // ── AI call ────────────────────────────────────────────────────────────────
 
+// Gemini's function-calling schema is OpenAPI-flavored and rejects JSON-Schema
+// keys like `additionalProperties`. Strip them recursively before sending.
+function stripUnsupportedSchemaKeys(schema: unknown): unknown {
+  if (Array.isArray(schema)) return schema.map(stripUnsupportedSchemaKeys);
+  if (schema && typeof schema === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(schema as Record<string, unknown>)) {
+      if (k === "additionalProperties" || k === "$schema") continue;
+      out[k] = stripUnsupportedSchemaKeys(v);
+    }
+    return out;
+  }
+  return schema;
+}
+
 // Calls Google's Gemini API directly (NOT via the Lovable AI Gateway).
 // Uses the native generateContent endpoint with function calling so we get
 // a structured rescue pack back.
 const GEMINI_MODEL = "gemini-2.5-flash";
+
 
 async function callRescueModel(input: RescueInput): Promise<RawRescuePack> {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
