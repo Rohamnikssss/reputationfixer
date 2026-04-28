@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, Check, Lock, AlertTriangle, ListChecks, Flag, Sparkles } from "lucide-react";
 import type { RescuePack } from "@/lib/rescue.functions";
 import { cn } from "@/lib/utils";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+import { startUnlockCheckout } from "@/lib/unlock";
+import { toast } from "sonner";
 
 function CopyBtn({ text, label = "Copy" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
