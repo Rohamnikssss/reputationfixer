@@ -10,7 +10,7 @@ import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Crown, Lock } from "lucide-react";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+import { startUnlockCheckout } from "@/lib/unlock";
 
 export const Route = createFileRoute("/app/generate")({
   component: GeneratePage,
