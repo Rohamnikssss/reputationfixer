@@ -144,6 +144,54 @@ export function RescueForm({
         </div>
       </div>
 
+      <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
+        <div>
+          <Label className="text-sm font-medium">Manager contact details</Label>
+          <p className="text-xs text-muted-foreground">
+            Used in every reply so the AI never leaves a <code>[manager email/phone]</code> placeholder. At least an email or phone is required.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="mgr-name" className="text-xs">Manager name (optional)</Label>
+            <Input
+              id="mgr-name"
+              placeholder="Maria Rossi"
+              value={v.managerName}
+              onChange={(e) => setV({ ...v, managerName: e.target.value })}
+              maxLength={120}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="mgr-email" className="text-xs">Email</Label>
+            <Input
+              id="mgr-email"
+              type="email"
+              placeholder="manager@nonnas.com"
+              value={v.contactEmail}
+              onChange={(e) => setV({ ...v, contactEmail: e.target.value })}
+              maxLength={200}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="mgr-phone" className="text-xs">Phone</Label>
+            <Input
+              id="mgr-phone"
+              type="tel"
+              placeholder="+1 555 123 4567"
+              value={v.contactPhone}
+              onChange={(e) => setV({ ...v, contactPhone: e.target.value })}
+              maxLength={60}
+            />
+          </div>
+        </div>
+        {!hasContact && (
+          <p className="text-xs text-warning">
+            Add an email or phone so customers have a real way to reach you.
+          </p>
+        )}
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="ctx">Owner context (optional)</Label>
         <Textarea
