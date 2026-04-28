@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Copy, Check, Lock, AlertTriangle, ListChecks, Flag, Sparkles } from "lucide-react";
 import type { RescuePack } from "@/lib/rescue.functions";
 import { cn } from "@/lib/utils";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+import { startUnlockCheckout } from "@/lib/unlock";
+import { toast } from "sonner";
 
 function CopyBtn({ text, label = "Copy" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
@@ -274,9 +275,16 @@ function AiDisclaimerBanner() {
   );
 }
 
-export function UnlockCTA({ href }: { href?: string }) {
-  const url = href ?? getStarterCheckoutUrl();
-  const external = hasExternalStarterCheckout() && /^https?:\/\//i.test(url);
+export function UnlockCTA() {
+  const [loading, setLoading] = useState(false);
+  const handleUnlock = async () => {
+    setLoading(true);
+    const ok = await startUnlockCheckout();
+    if (!ok) {
+      setLoading(false);
+      toast.error("Could not start checkout. Please try again.");
+    }
+  };
   return (
     <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
       <CardContent className="flex flex-col items-center gap-4 p-6 text-center sm:flex-row sm:text-left">
@@ -291,15 +299,11 @@ export function UnlockCTA({ href }: { href?: string }) {
             Get every reply, the private recovery message, owner checklist, and flag guidance — for your next 10 reviews.
           </p>
         </div>
-        <Button asChild size="lg" className="w-full sm:w-auto">
-          <a
-            href={url}
-            {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-          >
-            Unlock full rescue pack — $19
-          </a>
+        <Button size="lg" className="w-full sm:w-auto" onClick={handleUnlock} disabled={loading}>
+          {loading ? "Redirecting…" : "Unlock full rescue pack — $19"}
         </Button>
       </CardContent>
     </Card>
   );
 }
+

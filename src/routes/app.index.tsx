@@ -13,7 +13,8 @@ import {
   Crown,
   Star,
 } from "lucide-react";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+import { startUnlockCheckout } from "@/lib/unlock";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
@@ -24,7 +25,16 @@ export const Route = createFileRoute("/app/")({
 const FREE_CREDITS = 3;
 
 function Dashboard() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, hasUnlockedAccess } = useAuth();
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const handleUnlock = async () => {
+    setUnlockLoading(true);
+    const ok = await startUnlockCheckout();
+    if (!ok) {
+      setUnlockLoading(false);
+      toast.error("Could not start checkout. Please try again.");
+    }
+  };
   const [count, setCount] = useState<number | null>(null);
   const [recent, setRecent] = useState<
     {
@@ -59,9 +69,6 @@ function Dashboard() {
   const used = count ?? 0;
   const creditsRemaining = Math.max(FREE_CREDITS - used, 0);
   const outOfCredits = creditsRemaining === 0;
-  const upgradeUrl = getStarterCheckoutUrl();
-  const upgradeExternal =
-    hasExternalStarterCheckout() && /^https?:\/\//i.test(upgradeUrl);
 
   return (
     <div className="space-y-6">
@@ -75,14 +82,10 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
-          {!isAdmin && (
-            <Button asChild variant="outline">
-              <a
-                href={upgradeUrl}
-                {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-              >
-                <Crown className="mr-1.5 h-4 w-4" /> Upgrade
-              </a>
+          {!hasUnlockedAccess && (
+            <Button variant="outline" onClick={handleUnlock} disabled={unlockLoading}>
+              <Crown className="mr-1.5 h-4 w-4" />
+              {unlockLoading ? "Redirecting…" : "Upgrade"}
             </Button>
           )}
           <Button asChild>
@@ -104,7 +107,7 @@ function Dashboard() {
                 Credits remaining
               </div>
               <div className="mt-0.5 text-2xl font-semibold">
-                {isAdmin ? (
+                {hasUnlockedAccess ? (
                   "∞"
                 ) : (
                   <>
@@ -116,7 +119,7 @@ function Dashboard() {
                 )}
               </div>
               <div className="text-xs text-muted-foreground">
-                {isAdmin ? "Admin · unlimited" : "Free plan"}
+                {isAdmin ? "Admin · unlimited" : hasUnlockedAccess ? "Starter · unlocked" : "Free plan"}
               </div>
             </div>
           </CardContent>
@@ -151,18 +154,18 @@ function Dashboard() {
                 Plan
               </div>
               <div className="mt-0.5 text-2xl font-semibold">
-                {isAdmin ? "Admin" : "Free"}
+                {isAdmin ? "Admin" : hasUnlockedAccess ? "Starter" : "Free"}
               </div>
               <div className="text-xs text-muted-foreground">
-                {isAdmin ? "Test mode · all features" : "Upgrade for more"}
+                {isAdmin ? "Test mode · all features" : hasUnlockedAccess ? "All features unlocked" : "Upgrade for more"}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Upgrade CTA banner — hidden for admins (test mode) */}
-      {!isAdmin && (
+      {/* Upgrade CTA banner — hidden for admins/paid users */}
+      {!hasUnlockedAccess && (
         <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
           <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
@@ -179,13 +182,8 @@ function Dashboard() {
                 checklist, and flag guidance for your next 10 reviews.
               </p>
             </div>
-            <Button asChild size="lg" className="w-full sm:w-auto">
-              <a
-                href={upgradeUrl}
-                {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-              >
-                Unlock full rescue pack — $19
-              </a>
+            <Button size="lg" className="w-full sm:w-auto" onClick={handleUnlock} disabled={unlockLoading}>
+              {unlockLoading ? "Redirecting…" : "Unlock full rescue pack — $19"}
             </Button>
           </CardContent>
         </Card>

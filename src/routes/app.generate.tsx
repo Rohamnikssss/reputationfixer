@@ -10,7 +10,7 @@ import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Crown, Lock } from "lucide-react";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+import { startUnlockCheckout } from "@/lib/unlock";
 
 export const Route = createFileRoute("/app/generate")({
   component: GeneratePage,
@@ -21,7 +21,16 @@ export const Route = createFileRoute("/app/generate")({
 const FREE_CREDITS = 3;
 
 function GeneratePage() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, hasUnlockedAccess } = useAuth();
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const handleUnlock = async () => {
+    setUnlockLoading(true);
+    const ok = await startUnlockCheckout();
+    if (!ok) {
+      setUnlockLoading(false);
+      toast.error("Could not start checkout. Please try again.");
+    }
+  };
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pack, setPack] = useState<RescuePack | null>(null);
@@ -42,7 +51,7 @@ function GeneratePage() {
 
   const creditsRemaining = Math.max(FREE_CREDITS - (usedCredits ?? 0), 0);
   // Admins bypass the paywall entirely (test mode / owner access).
-  const outOfCredits = !isAdmin && usedCredits !== null && creditsRemaining === 0;
+  const outOfCredits = !hasUnlockedAccess && usedCredits !== null && creditsRemaining === 0;
 
   const run = async (v: RescueInput) => {
     if (!user) return;
@@ -124,10 +133,10 @@ function GeneratePage() {
             Paste the review, pick a tone, get the full pack.
           </p>
         </div>
-        {isAdmin ? (
+        {hasUnlockedAccess ? (
           <div className="text-xs">
             <span className="rounded-md bg-primary/15 px-2 py-1 font-medium text-primary">
-              Admin · unlimited
+              {isAdmin ? "Admin · unlimited" : "Unlocked"}
             </span>
           </div>
         ) : usedCredits !== null && (
@@ -141,35 +150,25 @@ function GeneratePage() {
       </div>
 
       {outOfCredits ? (
-        (() => {
-          const url = getStarterCheckoutUrl();
-          const external = hasExternalStarterCheckout() && /^https?:\/\//i.test(url);
-          return (
-            <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
-              <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">
-                    You've used all {FREE_CREDITS} free rescue packs
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Unlock 10 more rescue packs for $19 to keep generating.
-                  </p>
-                </div>
-                <Button asChild size="lg">
-                  <a
-                    href={url}
-                    {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-                  >
-                    <Crown className="mr-1.5 h-4 w-4" /> Unlock full rescue pack — $19
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })()
+        <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
+          <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold">
+                You've used all {FREE_CREDITS} free rescue packs
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Unlock 10 more rescue packs for $19 to keep generating.
+              </p>
+            </div>
+            <Button size="lg" onClick={handleUnlock} disabled={unlockLoading}>
+              <Crown className="mr-1.5 h-4 w-4" />
+              {unlockLoading ? "Redirecting…" : "Unlock full rescue pack — $19"}
+            </Button>
+          </CardContent>
+        </Card>
       ) : (
         <Card className="shadow-card">
           <CardContent className="p-6 sm:p-8">
@@ -199,8 +198,12 @@ function GeneratePage() {
               </Button>
             )}
           </div>
-          <RescueResult pack={pack} />
-          {!isAdmin && (
+          <RescueResult
+            pack={pack}
+            gated={!hasUnlockedAccess}
+            onUnlock={handleUnlock}
+          />
+          {!hasUnlockedAccess && (
             <div className="pt-2">
               <UnlockCTA />
               <p className="mt-3 text-center text-xs text-muted-foreground">
