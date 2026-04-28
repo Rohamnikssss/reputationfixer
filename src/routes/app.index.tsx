@@ -154,10 +154,10 @@ function Dashboard() {
                 Plan
               </div>
               <div className="mt-0.5 text-2xl font-semibold">
-                {isAdmin ? "Admin" : "Free"}
+                {isAdmin ? "Admin" : hasUnlockedAccess ? "Starter" : "Free"}
               </div>
               <div className="text-xs text-muted-foreground">
-                {isAdmin ? "Test mode · all features" : "Upgrade for more"}
+                {isAdmin ? "Test mode · all features" : hasUnlockedAccess ? "All features unlocked" : "Upgrade for more"}
               </div>
             </div>
           </CardContent>
