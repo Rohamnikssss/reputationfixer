@@ -51,7 +51,7 @@ function GeneratePage() {
 
   const creditsRemaining = Math.max(FREE_CREDITS - (usedCredits ?? 0), 0);
   // Admins bypass the paywall entirely (test mode / owner access).
-  const outOfCredits = !isAdmin && usedCredits !== null && creditsRemaining === 0;
+  const outOfCredits = !hasUnlockedAccess && usedCredits !== null && creditsRemaining === 0;
 
   const run = async (v: RescueInput) => {
     if (!user) return;
