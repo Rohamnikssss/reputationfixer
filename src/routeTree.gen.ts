@@ -21,6 +21,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppSavedRouteImport } from './routes/app.saved'
 import { Route as AppGenerateRouteImport } from './routes/app.generate'
+import { Route as ApiWebhookPolarRouteImport } from './routes/api.webhook.polar'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -82,6 +83,11 @@ const AppGenerateRoute = AppGenerateRouteImport.update({
   path: '/generate',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiWebhookPolarRoute = ApiWebhookPolarRouteImport.update({
+  id: '/api/webhook/polar',
+  path: '/api/webhook/polar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/app/generate': typeof AppGenerateRoute
   '/app/saved': typeof AppSavedRoute
   '/app/': typeof AppIndexRoute
+  '/api/webhook/polar': typeof ApiWebhookPolarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/app/generate': typeof AppGenerateRoute
   '/app/saved': typeof AppSavedRoute
   '/app': typeof AppIndexRoute
+  '/api/webhook/polar': typeof ApiWebhookPolarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/app/generate': typeof AppGenerateRoute
   '/app/saved': typeof AppSavedRoute
   '/app/': typeof AppIndexRoute
+  '/api/webhook/polar': typeof ApiWebhookPolarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/app/generate'
     | '/app/saved'
     | '/app/'
+    | '/api/webhook/polar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/app/generate'
     | '/app/saved'
     | '/app'
+    | '/api/webhook/polar'
   id:
     | '__root__'
     | '/'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/app/generate'
     | '/app/saved'
     | '/app/'
+    | '/api/webhook/polar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   RequestAccessRoute: typeof RequestAccessRoute
   TermsRoute: typeof TermsRoute
+  ApiWebhookPolarRoute: typeof ApiWebhookPolarRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGenerateRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/webhook/polar': {
+      id: '/api/webhook/polar'
+      path: '/api/webhook/polar'
+      fullPath: '/api/webhook/polar'
+      preLoaderRoute: typeof ApiWebhookPolarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -294,6 +314,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   RequestAccessRoute: RequestAccessRoute,
   TermsRoute: TermsRoute,
+  ApiWebhookPolarRoute: ApiWebhookPolarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
