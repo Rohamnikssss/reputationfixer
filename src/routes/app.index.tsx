@@ -107,7 +107,7 @@ function Dashboard() {
                 Credits remaining
               </div>
               <div className="mt-0.5 text-2xl font-semibold">
-                {isAdmin ? (
+                {hasUnlockedAccess ? (
                   "∞"
                 ) : (
                   <>
@@ -119,7 +119,7 @@ function Dashboard() {
                 )}
               </div>
               <div className="text-xs text-muted-foreground">
-                {isAdmin ? "Admin · unlimited" : "Free plan"}
+                {isAdmin ? "Admin · unlimited" : hasUnlockedAccess ? "Starter · unlocked" : "Free plan"}
               </div>
             </div>
           </CardContent>
