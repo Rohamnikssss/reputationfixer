@@ -150,35 +150,25 @@ function GeneratePage() {
       </div>
 
       {outOfCredits ? (
-        (() => {
-          const url = getStarterCheckoutUrl();
-          const external = hasExternalStarterCheckout() && /^https?:\/\//i.test(url);
-          return (
-            <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
-              <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">
-                    You've used all {FREE_CREDITS} free rescue packs
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Unlock 10 more rescue packs for $19 to keep generating.
-                  </p>
-                </div>
-                <Button asChild size="lg">
-                  <a
-                    href={url}
-                    {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-                  >
-                    <Crown className="mr-1.5 h-4 w-4" /> Unlock full rescue pack — $19
-                  </a>
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })()
+        <Card className="overflow-hidden border-primary/40 bg-gradient-primary/10 shadow-glow">
+          <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
+              <Lock className="h-5 w-5" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold">
+                You've used all {FREE_CREDITS} free rescue packs
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Unlock 10 more rescue packs for $19 to keep generating.
+              </p>
+            </div>
+            <Button size="lg" onClick={handleUnlock} disabled={unlockLoading}>
+              <Crown className="mr-1.5 h-4 w-4" />
+              {unlockLoading ? "Redirecting…" : "Unlock full rescue pack — $19"}
+            </Button>
+          </CardContent>
+        </Card>
       ) : (
         <Card className="shadow-card">
           <CardContent className="p-6 sm:p-8">
@@ -208,8 +198,12 @@ function GeneratePage() {
               </Button>
             )}
           </div>
-          <RescueResult pack={pack} />
-          {!isAdmin && (
+          <RescueResult
+            pack={pack}
+            gated={!hasUnlockedAccess}
+            onUnlock={handleUnlock}
+          />
+          {!hasUnlockedAccess && (
             <div className="pt-2">
               <UnlockCTA />
               <p className="mt-3 text-center text-xs text-muted-foreground">
