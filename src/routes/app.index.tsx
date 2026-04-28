@@ -82,14 +82,10 @@ function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
-          {!isAdmin && (
-            <Button asChild variant="outline">
-              <a
-                href={upgradeUrl}
-                {...(upgradeExternal ? { target: "_blank", rel: "noreferrer" } : {})}
-              >
-                <Crown className="mr-1.5 h-4 w-4" /> Upgrade
-              </a>
+          {!hasUnlockedAccess && (
+            <Button variant="outline" onClick={handleUnlock} disabled={unlockLoading}>
+              <Crown className="mr-1.5 h-4 w-4" />
+              {unlockLoading ? "Redirecting…" : "Upgrade"}
             </Button>
           )}
           <Button asChild>
