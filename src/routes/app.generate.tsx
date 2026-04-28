@@ -21,7 +21,16 @@ export const Route = createFileRoute("/app/generate")({
 const FREE_CREDITS = 3;
 
 function GeneratePage() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, hasUnlockedAccess } = useAuth();
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const handleUnlock = async () => {
+    setUnlockLoading(true);
+    const ok = await startUnlockCheckout();
+    if (!ok) {
+      setUnlockLoading(false);
+      toast.error("Could not start checkout. Please try again.");
+    }
+  };
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [pack, setPack] = useState<RescuePack | null>(null);
