@@ -261,7 +261,9 @@ async function callRescueModel(input: RescueInput): Promise<RawRescuePack> {
             {
               name: RESCUE_TOOL_SCHEMA.function.name,
               description: RESCUE_TOOL_SCHEMA.function.description,
-              parameters: RESCUE_TOOL_SCHEMA.function.parameters,
+              parameters: stripUnsupportedSchemaKeys(
+                RESCUE_TOOL_SCHEMA.function.parameters
+              ),
             },
           ],
         },
