@@ -11,7 +11,7 @@
  * Webhook signature is verified using POLAR_WEBHOOK_SECRET (Standard Webhooks).
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { Webhook } from "standardwebhooks";
+import { createHmac, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const CORS = {
@@ -81,13 +81,42 @@ export const Route = createFileRoute("/api/webhook/polar")({
           headers[k] = v;
         });
 
+        // Verify Standard Webhooks signature inline (avoids ESM-incompatible
+        // 'standardwebhooks' package in the Worker runtime).
+        // Spec: signature header is "v1,<base64(hmac-sha256(id.timestamp.body))>"
+        // signed with the base64-decoded webhook secret.
         let event: { type: string; data: Record<string, unknown> };
         try {
-          // Polar provides the secret as a plain string; Standard Webhooks
-          // expects it base64-encoded.
-          const base64Secret = Buffer.from(secret, "utf-8").toString("base64");
-          const wh = new Webhook(base64Secret);
-          event = wh.verify(body, headers) as typeof event;
+          const id = headers["webhook-id"];
+          const timestamp = headers["webhook-timestamp"];
+          const sigHeader = headers["webhook-signature"];
+          if (!id || !timestamp || !sigHeader) {
+            throw new Error("Missing webhook signature headers");
+          }
+          // Reject very old timestamps (> 5 min skew)
+          const age = Math.abs(Date.now() / 1000 - Number(timestamp));
+          if (!Number.isFinite(age) || age > 300) {
+            throw new Error("Stale webhook timestamp");
+          }
+          // Polar gives the secret as a plain string. Standard Webhooks treats
+          // the secret as base64; decode it for the HMAC key.
+          const keyBytes = Buffer.from(secret, "base64");
+          const signedPayload = `${id}.${timestamp}.${body}`;
+          const expected = createHmac("sha256", keyBytes)
+            .update(signedPayload)
+            .digest("base64");
+          // Header may contain multiple "v1,sig" entries, space-separated.
+          const ok = sigHeader.split(" ").some((entry) => {
+            const [, sig] = entry.split(",");
+            if (!sig || sig.length !== expected.length) return false;
+            try {
+              return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
+            } catch {
+              return false;
+            }
+          });
+          if (!ok) throw new Error("Signature mismatch");
+          event = JSON.parse(body) as typeof event;
         } catch (err) {
           // eslint-disable-next-line no-console
           console.error("[polar-webhook] signature verification failed:", err);
