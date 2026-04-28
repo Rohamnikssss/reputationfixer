@@ -7,7 +7,7 @@ import { RescueResult, UnlockCTA } from "@/components/rescue-result";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { generateRescuePack, type RescuePack } from "@/lib/rescue.functions";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+// Polar checkout requires auth — anonymous landing-page visitors are routed to /login.
 import {
   Sparkles,
   ShieldCheck,
