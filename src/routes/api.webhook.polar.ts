@@ -136,7 +136,7 @@ export const Route = createFileRoute("/api/webhook/polar")({
               currency: (order.currency ?? "USD").toUpperCase(),
               provider_order_id: order.id ?? null,
               status: "paid",
-              raw_payload: event as unknown as Record<string, unknown>,
+              raw_payload: JSON.parse(JSON.stringify(event)),
             });
           }
         } catch (err) {
