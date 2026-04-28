@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
@@ -34,32 +35,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Look up admin role whenever the user changes.
-  // Uses the `user_roles` table (RLS lets users read their own roles).
+  // Look up roles whenever the user changes.
   useEffect(() => {
     if (!user) {
       setIsAdmin(false);
+      setIsPaid(false);
       return;
     }
     let cancelled = false;
-    (async () => {
+    const loadRoles = async () => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
+        .eq("user_id", user.id);
       if (cancelled) return;
       if (error) {
         // eslint-disable-next-line no-console
         console.error("[auth] role lookup failed:", error);
         setIsAdmin(false);
+        setIsPaid(false);
         return;
       }
-      setIsAdmin(!!data);
-    })();
+      const roles = (data ?? []).map((r) => r.role);
+      setIsAdmin(roles.includes("admin"));
+      setIsPaid(roles.includes("paid"));
+    };
+    loadRoles();
+
+    // Realtime: when payments grant a role, reflect it without a refresh.
+    const channel = supabase
+      .channel(`user_roles_${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles", filter: `user_id=eq.${user.id}` },
+        () => loadRoles()
+      )
+      .subscribe();
+
     return () => {
       cancelled = true;
+      supabase.removeChannel(channel);
     };
   }, [user]);
 
@@ -67,8 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const hasUnlockedAccess = isAdmin || isPaid;
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, isPaid, hasUnlockedAccess, signOut }}>
       {children}
     </AuthContext.Provider>
   );
