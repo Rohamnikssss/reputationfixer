@@ -69,9 +69,6 @@ function Dashboard() {
   const used = count ?? 0;
   const creditsRemaining = Math.max(FREE_CREDITS - used, 0);
   const outOfCredits = creditsRemaining === 0;
-  const upgradeUrl = getStarterCheckoutUrl();
-  const upgradeExternal =
-    hasExternalStarterCheckout() && /^https?:\/\//i.test(upgradeUrl);
 
   return (
     <div className="space-y-6">
