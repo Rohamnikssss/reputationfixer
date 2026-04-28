@@ -11,7 +11,7 @@
  * Webhook signature is verified using POLAR_WEBHOOK_SECRET (Standard Webhooks).
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { Webhook } from "standardwebhooks";
+import { createHmac, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const CORS = {
