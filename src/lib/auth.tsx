@@ -7,6 +7,8 @@ interface AuthContextValue {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  isPaid: boolean;
+  hasUnlockedAccess: boolean;
   signOut: () => Promise<void>;
 }
 
