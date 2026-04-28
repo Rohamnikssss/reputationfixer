@@ -31,6 +31,15 @@ function LandingPage() {
     setLoading(true);
     setPack(null);
     try {
+      // Require auth before invoking the server function — otherwise the RPC
+      // throws a 401 Response that surfaces as a blank-screen runtime error.
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) {
+        toast.error("Please sign in to generate a rescue pack — it's free.");
+        window.location.href = "/login?mode=signup&next=/app/generate";
+        return;
+      }
       const result = await generateRescuePack({ data: v });
       setPack(result);
       setTimeout(() => {
