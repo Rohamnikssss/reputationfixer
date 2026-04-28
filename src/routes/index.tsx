@@ -220,12 +220,8 @@ function LandingPage() {
                 pack={pack}
                 gated
                 onUnlock={() => {
-                  const url = getStarterCheckoutUrl();
-                  if (hasExternalStarterCheckout() && /^https?:\/\//i.test(url)) {
-                    window.open(url, "_blank", "noreferrer");
-                  } else {
-                    window.location.href = url;
-                  }
+                  // Anonymous landing-page users must sign in to start checkout.
+                  window.location.href = "/login?mode=signup&next=/app";
                 }}
               />
 
