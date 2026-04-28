@@ -13,7 +13,8 @@ import {
   Crown,
   Star,
 } from "lucide-react";
-import { getStarterCheckoutUrl, hasExternalStarterCheckout } from "@/lib/checkout";
+import { startUnlockCheckout } from "@/lib/unlock";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
