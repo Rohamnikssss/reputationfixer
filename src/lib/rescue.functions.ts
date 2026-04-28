@@ -60,20 +60,17 @@ export const generateRescuePack = createServerFn({ method: "POST" })
   .middleware([forwardSupabaseAuth, requireSupabaseAuth])
   .inputValidator((input: unknown) => RescueInputSchema.parse(input))
   .handler(async ({ data, context }) => {
-    // Admins bypass the free-credit gate entirely (test mode / owner access).
-    const { data: adminRow } = await context.supabase
+    // Admins and paid users bypass the free-credit gate.
+    const { data: roleRows } = await context.supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", context.userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    const isAdmin = !!adminRow;
+      .in("role", ["admin", "paid"]);
+    const roles = (roleRows ?? []).map((r) => r.role);
+    const hasUnlockedAccess = roles.includes("admin") || roles.includes("paid");
 
-    if (!isAdmin) {
+    if (!hasUnlockedAccess) {
       // Server-side credit enforcement.
-      // The browser also gates this for UX, but the browser cannot be trusted —
-      // so we re-check here using the authenticated user's own RLS-scoped
-      // supabase client.
       const { count, error: countError } = await context.supabase
         .from("generations")
         .select("*", { count: "exact", head: true })
