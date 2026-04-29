@@ -20,6 +20,32 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Reputation Fixer AI — Reply to Bad Restaurant Reviews in Seconds" },
+      {
+        name: "description",
+        content:
+          "AI customer-support writing assistant for restaurants. Paste a negative review and generate professional public reply drafts, private recovery messages, and action checklists.",
+      },
+      { property: "og:title", content: "Reputation Fixer AI — Reply to Bad Restaurant Reviews in Seconds" },
+      {
+        property: "og:description",
+        content:
+          "AI customer-support writing assistant for restaurants. Paste a negative review and generate professional public reply drafts, private recovery messages, and action checklists.",
+      },
+      { property: "og:url", content: "https://reputationfixer.lovable.app/" },
+      { property: "og:image", content: "https://reputationfixer.lovable.app/og-image.jpg" },
+      { name: "twitter:title", content: "Reputation Fixer AI — Reply to Bad Restaurant Reviews in Seconds" },
+      {
+        name: "twitter:description",
+        content:
+          "Bad review? Reply professionally in 30 seconds. AI rescue packs for restaurants.",
+      },
+      { name: "twitter:image", content: "https://reputationfixer.lovable.app/og-image.jpg" },
+    ],
+    links: [{ rel: "canonical", href: "https://reputationfixer.lovable.app/" }],
+  }),
   component: LandingPage,
 });
 
@@ -108,7 +134,7 @@ function LandingPage() {
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button size="lg" asChild>
-                <a href="#generator">Fix my review now</a>
+                <a href="#generator">Try free review reply generator</a>
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/pricing">See pricing</Link>
