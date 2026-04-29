@@ -31,6 +31,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "u71ZHOkUMKkkWkT6KLNJ3eaXT3hpioVuYPTCG1ipfTA" },
       { name: "robots", content: "index, follow" },
       { name: "googlebot", content: "index, follow" },
       { name: "twitter:card", content: "summary_large_image" },
